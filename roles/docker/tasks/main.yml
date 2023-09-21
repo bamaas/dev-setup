@@ -1,0 +1,117 @@
+---
+
+- name: Install prerequisites
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+- name: Load docker apt key
+  shell: |
+    set -o pipefail
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+    sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  args:
+    executable: /bin/bash
+    creates: /usr/share/keyrings/docker-archive-keyring.gpg
+
+- name: Configure docker apt repository
+  copy:
+    dest: /etc/apt/sources.list.d/docker.list
+    content: deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    mode: '0644'
+
+- name: Install docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    update_cache: true
+
+- name: Ensure directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /etc/docker
+    - ~{{ ansible_username }}/.docker
+    - ~root/.docker
+
+- name: Configure docker daemon
+  copy:
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+    content: |
+      {
+        "insecure-registries" : ["localhost:5443"]
+      }
+
+- name: Change ownership of docker login creds folder
+  file:
+    path: "~{{ ansible_username }}/.docker"
+    state: directory
+    recurse: true
+    owner: "{{ ansible_username }}"
+    group: "{{ ansible_username }}"
+
+- name: Start docker service
+  shell: |
+    set -o pipefail
+    if [[ -z $(ps aux | grep dockerd | grep -v grep) ]]; then
+      sudo service docker start
+    fi
+  args:
+    executable: /bin/bash
+
+- name: Add local user to docker group
+  user:
+    name: "{{ ansible_username }}"
+    groups: docker
+    append: true
+
+- name: Switch to the legacy variant of iptables
+  alternatives:
+    name: iptables
+    path: /usr/sbin/iptables-legacy
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '22.04'
+
+- name: Check whether ~/.profile contains Docker daemon startup script
+  shell: set -o pipefail && (grep '# Start Docker daemon automatically when logging in if not running.' ~{{ ansible_username }}/.profile || true) | wc -l
+  register: service_startup_set
+  changed_when: service_startup_set.rc != 0
+  args:
+    executable: /bin/bash
+
+- name: Start Docker daemon automatically when logging in if not running.
+  shell: |
+    echo '# Start Docker daemon automatically when logging in if not running.' >> ~{{ ansible_username }}/.profile
+    echo 'if [[ -z $(ps aux | grep dockerd | grep -v grep) ]]; then' >> ~{{ ansible_username }}/.profile
+    echo '    sudo service docker start > /dev/null 2>&1' >> ~{{ ansible_username }}/.profile
+    echo 'fi' >> ~{{ ansible_username }}/.profile
+  args:
+    executable: /bin/bash
+  when: service_startup_set.stdout != '1'
+
+- name: Install docker-compose
+  pip:
+    name:
+      - docker-compose==1.29.2
+
+- name: Set docker aliases
+  lineinfile:
+    path: "~{{ ansible_username }}/.profile"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - regexp: |
+        alias d='docker '
+      line: |
+        alias d='docker '
+    - regexp: |
+        alias dc='docker-compose '
+      line: |
+        alias dc='docker-compose '

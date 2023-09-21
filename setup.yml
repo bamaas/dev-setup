@@ -1,0 +1,20 @@
+---
+
+- name: Setup WSL2 work environment
+  hosts: localhost
+  become: true
+  pre_tasks:
+    - name: Set ansible_username
+      set_fact:
+        ansible_username: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
+
+  roles:
+    - packages
+    - ssh
+    - go
+    - docker
+    - kind
+    - kubectl
+    - k9s
+    - helm
+    - zsh

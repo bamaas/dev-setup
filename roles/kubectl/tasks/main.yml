@@ -1,0 +1,48 @@
+---
+- name: Determine whether kubectl is already installed with the desired version
+  shell: "set -o pipefail && (apt list --manual-installed | grep kubectl | grep '{{ kubectl_version }}' || true) | wc -l"
+  args:
+    executable: /bin/bash
+  register: kubectl_installed
+  changed_when: kubectl_installed.rc != 0
+
+- name: Install kubectl
+  when: kubectl_installed.stdout != '1'
+  block:
+    - name: Install apt packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+
+    - name: Get public signing key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+      tags:
+        - kubernetes
+
+    - name: Configure kubernetes apt repository
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: kubernetes.list
+        update_cache: true
+      tags:
+        - kubernetes
+
+    - name: Install kubectl
+      apt:
+        name: kubectl={{ kubectl_version }}
+        update_cache: true
+      tags:
+        - kubernetes
+
+- name: Set alias k for kubectl
+  lineinfile:
+    path: "~{{ ansible_username }}/.profile"
+    regexp: |
+      alias k='kubectl '
+    line: |
+      alias k='kubectl '

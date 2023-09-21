@@ -1,0 +1,7 @@
+---
+
+- name: Disable sending locale via SSH
+  lineinfile:
+    path: /etc/ssh/ssh_config
+    regexp: SendEnv LANG LC_\*
+    line: '#   SendEnv LANG LC_*'

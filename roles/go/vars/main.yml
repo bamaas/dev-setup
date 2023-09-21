@@ -1,0 +1,6 @@
+---
+go_versions:
+  - "1.19"
+  - "1.20"
+
+use_go_version: "1.20"

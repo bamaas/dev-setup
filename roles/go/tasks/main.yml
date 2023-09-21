@@ -1,0 +1,75 @@
+---
+- name: Install apt packages
+  apt:
+    name:
+      - bison
+      - git
+      - curl
+
+- name: Determine whether GVM is already installed with the desired version
+  shell: "set -o pipefail && (gvm version 2>/dev/null || true) | (grep 'Go Version Manager' || true) | wc -l"
+  become: false
+  args:
+    executable: /bin/bash
+  register: gvm_installed
+  changed_when: gvm_installed.rc != 0
+
+- name: Install Go Version Manager
+  when: gvm_installed.stdout != '1'
+  block:
+    - name: Create temporary directory for kind binary
+      become: false
+      tempfile:
+        state: directory
+        suffix: gvm
+      register: tmpdir_gvm_installer
+
+    - name: Get gvm install script
+      become: false
+      get_url:
+        url: https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer
+        dest: "{{ tmpdir_gvm_installer.path }}/gvm-installer.sh"
+        mode: '0755'
+
+    - name: Execute gvm install script
+      shell: "{{ tmpdir_gvm_installer.path }}/gvm-installer.sh"
+      become: false
+      args:
+        executable: /bin/bash
+
+    - name: Ensure gvm is set in ~/.profile
+      lineinfile:
+        path: "~{{ ansible_username }}/.profile"
+        regexp: /.gvm/scripts/gvm
+        line: |
+          [[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
+
+  always:
+    - name: Recursively remove temporary gvm installer directory
+      file:
+        path: "{{ tmpdir_gvm_installer.path }}"
+        state: absent
+
+  rescue:
+    - name: Recursively remove temporary gvm installer directory
+      file:
+        path: "{{ tmpdir_gvm_installer.path }}"
+        state: absent
+
+- name: Install Go versions
+  shell: "export GVM_ROOT=~{{ ansible_username }}/.gvm && ./gvm install go{{ item }} -B"
+  become: false
+  loop: "{{ go_versions }}"
+  args:
+    executable: /bin/bash
+    chdir: "~{{ ansible_username }}/.gvm/bin"
+
+- name: Set default Go version
+  shell: |
+    set -o pipefail && \
+    export GVM_ROOT=~{{ ansible_username }}/.gvm && \
+    source $GVM_ROOT/scripts/gvm && \
+    gvm use go{{ use_go_version }} --default
+  become: false
+  args:
+    executable: /bin/bash

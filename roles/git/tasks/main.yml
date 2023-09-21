@@ -1,0 +1,15 @@
+---
+- name: Install Git
+  block:
+    - name: Install Git apt package
+      become: true
+      apt:
+        name: git
+
+- name: Set alias g for Git
+  lineinfile:
+    path: "~{{ ansible_username }}/.profile"
+    regexp: |
+      alias g='git '
+    line: |
+      alias g='git '

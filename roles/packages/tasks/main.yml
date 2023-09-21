@@ -1,0 +1,30 @@
+---
+
+- name: Install apt packages
+  apt:
+    name:
+      - dnsutils
+      - jq
+      - net-tools
+      - netcat
+      - pandoc
+      - pigz
+      - python3-venv
+      - rsync
+      - strace
+      - tcpdump
+      - tcptrack
+      - telnet
+      - tree
+      - vim
+      - wget
+      - dialog
+
+- name: Install python packages
+  pip:
+    name:
+      - setuptools==58.0.3
+      - wheel==0.37.0
+      - yq==3.1.0
+      - ipython
+      - requests

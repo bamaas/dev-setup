@@ -1,0 +1,25 @@
+---
+- name: Determine whether helm is already installed with the desired version
+  shell: "set -o pipefail && (apt list --manual-installed | grep helm | grep '{{ helm_version }}' || true) | wc -l"
+  args:
+    executable: /bin/bash
+  register: helm_installed
+  changed_when: helm_installed.rc != 0
+
+- name: Install helm
+  when: helm_installed.stdout != '1'
+  block:
+    - name: Configure Helm apt repository
+      copy:
+        content: deb [arch=amd64] https://baltocdn.com/helm/stable/debian/ all main
+        dest: /etc/apt/sources.list.d/helm.list
+        mode: '0644'
+
+    - name: Install Helm apt key
+      apt_key:
+        url: https://baltocdn.com/helm/signing.asc
+
+    - name: Install Helm
+      apt:
+        name: helm={{ helm_version }}
+        update_cache: true
