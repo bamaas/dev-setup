@@ -59,7 +59,7 @@ sudo apt-get install -y python3-pip
 sudo pip3 install --upgrade pip
 sudo pip3 install ansible==2.9.17 Jinja2==3.0 --no-cache-dir
 
-ansible-galaxy install gantsign.oh-my-zsh
+ansible-galaxy install -r requirements.yaml
 ansible-playbook setup.yml -K
 
 # Colors
@@ -75,7 +75,7 @@ if [ $? -eq 0 ]; then
 	exit 0
 else
 	echo "---------------------------------------------------------------------"
-    printf "${red}ERROR: not everything installed successfully.${reset}\n" 
+    printf "${red}ERROR: not everything installed successfully.${reset}\n"
 	printf "${red}Please check the above error logs.${reset}\n"
 	echo "---------------------------------------------------------------------"
     exit 1

@@ -1,12 +1,23 @@
 ---
 
+# - name: Print facts
+#   hosts: localhost
+#   gather_facts: true
+#   tasks:
+#     - name: Print all available facts
+#       debug:
+#         var: ansible_facts
+
 - name: Setup WSL2 work environment
   hosts: localhost
   become: true
+  gather_facts: true
   pre_tasks:
     - name: Set ansible_username
       set_fact:
         ansible_username: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
+        ansible_os_family: Debian
+        os_family: Debian
 
   roles:
     - packages
@@ -18,3 +29,4 @@
     - k9s
     - helm
     - zsh
+    - python

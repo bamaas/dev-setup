@@ -99,6 +99,8 @@
 - name: Install docker-compose
   pip:
     name:
+      - setuptools==58.0.3
+      - wheel==0.37.0
       - docker-compose==1.29.2
 
 - name: Set docker aliases

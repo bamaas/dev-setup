@@ -1,0 +1,13 @@
+---
+python_versions:
+  - 3.11.0
+
+# The default Python version to use on the system
+python_version_global: "3.11.0"
+
+python_packages:
+  - setuptools==58.0.3
+  - wheel==0.37.0
+  - yq==3.1.0
+  - ipython
+  - requests

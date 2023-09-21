@@ -1,7 +1,7 @@
 ---
 
 - name: Apply tags to tasks within included file
-  ansible.builtin.include_role:
+  include_role:
     name: gantsign.oh-my-zsh
   vars:
     users:
@@ -35,14 +35,14 @@
       git:
         repo: https://github.com/wting/autojump.git
         dest: ~{{ ansible_username }}/.zsh/autojump
-    
+
     - name: Execute install script autojump
       become: false
       shell: "SHELL=/bin/zsh python3 ./install.py"
       args:
         chdir: ~{{ ansible_username }}/.zsh/autojump
         executable: /bin/zsh
-  
+
     - name: Ensure autojump is set in ~/.zshrc
       lineinfile:
         path: "~{{ ansible_username }}/.zshrc"
@@ -52,7 +52,7 @@
         - regexp: |
             autojump.sh \]\] && source
           line: |
-            [[ -s ~{{ ansible_username }}/.autojump/etc/profile.d/autojump.sh ]] && source ~{{ ansible_username }}/.autojump/etc/profile.d/autojump.sh    
+            [[ -s ~{{ ansible_username }}/.autojump/etc/profile.d/autojump.sh ]] && source ~{{ ansible_username }}/.autojump/etc/profile.d/autojump.sh
         - regexp: |
             autoload -U compinit && compinit -u
           line: |
@@ -65,7 +65,7 @@
 
 - name: Get zsh-syntax-highlighting
   git:
-    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git 
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
     dest: "~{{ ansible_username }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
 
 - name: Get pure theme
@@ -85,7 +85,7 @@
       lineinfile:
         path: "~{{ ansible_username }}/.zshrc"
         regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"    
+        line: "{{ item.line }}"
       loop:
         - regexp: |
             HOME/.zsh/pure

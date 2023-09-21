@@ -1,4 +1,8 @@
 ---
+- name: Install apt package
+  apt:
+    name:
+      - openssh-client
 
 - name: Disable sending locale via SSH
   lineinfile:
