@@ -29,5 +29,6 @@
     - k9s
     - helm
     - az
+    - openshift
     - zsh
     - python

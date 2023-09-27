@@ -38,9 +38,3 @@
       file:
         path: "{{ tmpdir_kindbin.path }}"
         state: absent
-
-  rescue:
-    - name: Recursively remove temporary kind image directory
-      file:
-        path: "{{ tmpdir_kindimg.path }}"
-        state: absent
