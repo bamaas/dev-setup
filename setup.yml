@@ -28,5 +28,6 @@
     - kubectl
     - k9s
     - helm
+    - az
     - zsh
     - python

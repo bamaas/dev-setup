@@ -1,0 +1,42 @@
+---
+- name: Determine whether Azure CLI is already installed with the desired version
+  shell: "set -o pipefail && (apt list --manual-installed | grep azure-cli | grep '{{ azure_cli_version }}' || true) | wc -l"
+  args:
+    executable: /bin/bash
+  register: az_cli_installed
+  changed_when: az_cli_installed.rc != 0
+
+- name: Install Azure CLI
+  when: az_cli_installed.stdout != '1'
+  block:
+    - name: Install apt packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - lsb-release
+          - gnupg
+
+    - name: Get public signing key
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+      tags:
+        - az
+
+    - name: Configure Azure CLI apt repository
+      apt_repository:
+        repo: deb https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main
+        state: present
+        filename: azure-cli
+        update_cache: true
+      tags:
+        - az
+
+    - name: Install Azure CLI
+      apt:
+        name: azure-cli
+        update_cache: true
+      tags:
+        - az
