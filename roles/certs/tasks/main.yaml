@@ -1,0 +1,29 @@
+---
+
+- name: Ensure certificate directory
+  file:
+    path: "/usr/share/ca-certificates"
+    state: directory
+    mode: '0755'
+
+- name: Get certificates
+  become: true
+  shell: |
+    set -o pipefail
+    (echo "" | openssl s_client -showcerts -connect "{{ item }}:443" 2>/dev/null | openssl x509 -text 2>/dev/null) > /usr/share/ca-certificates/{{ item }}_ca.pem
+  args:
+    creates:
+      - "/usr/share/ca-certificates/{{ item }}_ca.pem"
+    executable: /bin/bash
+  loop: "{{ cert_urls }}"
+
+- name: Set in /etc/ca-certificates.conf
+  lineinfile:
+    path: "/etc/ca-certificates.conf"
+    regexp: "{{ item }}_ca.pem"
+    line: "{{ item }}_ca.pem"
+  loop: "{{ cert_urls }}"
+
+- name: Load new certificates
+  command: update-ca-certificates
+  changed_when: true

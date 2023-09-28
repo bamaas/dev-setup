@@ -95,7 +95,6 @@
   register: pyenv_version_installed
   args:
     executable: /bin/bash
-    chdir: "~{{ ansible_username }}/.gvm/bin"
 
 - name: Set default global Python version
   shell: "~{{ ansible_username }}/.pyenv/bin/pyenv global {{ python_version_global }}"

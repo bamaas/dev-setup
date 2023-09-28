@@ -30,5 +30,6 @@
     - helm
     - az
     - openshift
+    - certs
     - zsh
     - python
