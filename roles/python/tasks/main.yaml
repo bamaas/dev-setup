@@ -109,3 +109,11 @@
   args:
     executable: /bin/bash
   loop: "{{ python_packages }}"
+
+## TODO: Fix this hacky solution.
+- name: Intall Python CLI tools
+  shell: "~{{ ansible_username }}/.pyenv/shims/pipx install {{ item }}"
+  become: false
+  args:
+    executable: /bin/bash
+  loop: "{{ python_cli_tools }}"

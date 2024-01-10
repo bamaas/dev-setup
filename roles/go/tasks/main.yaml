@@ -74,3 +74,14 @@
   become: false
   args:
     executable: /bin/bash
+
+- name: Implement WSL2 path workaround for issue https://github.com/moovweb/gvm/issues/445
+  lineinfile:
+    path: "~{{ ansible_username }}/.profile"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - regexp: |
+        export PATH=$\(echo $PATH \| sed
+      line: |
+        export PATH=$(echo $PATH | sed 's/:\([^/]\)/ \1/g')
