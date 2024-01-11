@@ -20,16 +20,17 @@
         os_family: Debian
 
   roles:
-    - packages
-    - ssh
-    - go
-    - docker
-    - kind
-    - kubectl
-    - k9s
-    - helm
-    - az
-    - openshift
     - certs
-    - zsh
-    - python
+    # - packages
+    # - ssh
+    # - go
+    # - docker
+    # - kind
+    # - kubectl
+    # - k9s
+    # - helm
+    # - az
+    # - openshift
+    # - certs
+    # - zsh
+    # - python

@@ -7,32 +7,8 @@
 6. Run: `./install.sh` (You are prompted for your password 2 times during installation)
 7. logout sign-in again
 8. Set default profile in Windows terminal. Go to: `settings -> Startup -> Default profile`
-9. Install color scheme. Open Windows terminal settings.json: `Arrow button -> settings -> gear icon bottom left`. Paste the below code block as part of the array `schemes`:
-```
-// Source: https://github.com/Richienb/windows-terminal-snazzy
-{
-	"name": "Snazzy",
-	"foreground": "#eff0eb",
-	"background": "#282a36",
-	"selectionBackground": "#3e404a",
-	"cursorColor": "#97979b",
-	"black": "#282a36",
-	"red": "#ff5c57",
-	"green": "#5af78e",
-	"yellow": "#f3f99d",
-	"blue": "#57c7ff",
-	"purple": "#ff6ac1",
-	"cyan": "#9aedfe",
-	"white": "#f1f1f0",
-	"brightBlack": "#686868",
-	"brightRed": "#ff5c57",
-	"brightGreen": "#5af78e",
-	"brightYellow": "#f3f99d",
-	"brightBlue": "#57c7ff",
-	"brightPurple": "#ff6ac1",
-	"brightCyan": "#9aedfe",
-	"brightWhite": "#eff0eb"
-}
-```
+9. Install color scheme (https://github.com/Richienb/windows-terminal-snazzy). Open Windows terminal settings.json: `Arrow button -> settings -> gear icon bottom left`. Paste [snazzy-scheme.json](terminal/snazzy-scheme.json) from in the schemes object.
 10. Set color scheme & font. Go to: `Select profile -> appearance -> Set color scheme to Snazzy -> Set font face to Cascadia Mono -> Set font size to 10`
 11. Select profile -> adanced -> Bell notification style -> turn everything off
+12. Set keybindings. Open Windows terminal settings.json: `Arrow button -> settings -> gear icon bottom left`. Overwrite the 'actions' object with the 'actions' object from [keybindings.json](terminal/keybindings.json).
+13. Set background image.
