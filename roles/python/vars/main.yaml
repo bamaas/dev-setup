@@ -1,9 +1,9 @@
 ---
 python_versions:
-  - 3.11.5
+  - 3.11.6
 
 # The default Python version to use on the system
-python_version_global: "3.11.5"
+python_version_global: "3.11.6"
 
 python_packages:
   - setuptools==58.0.3
