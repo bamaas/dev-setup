@@ -41,3 +41,9 @@
       export GCM_CREDENTIAL_STORE=plaintext
     line: |
       export GCM_CREDENTIAL_STORE=plaintext
+
+- name: Create home Git directory if it does not exist
+  file:
+    path: "~{{ ansible_username }}/git"
+    state: directory
+    mode: '0755'
