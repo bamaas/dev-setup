@@ -1,6 +1,6 @@
 ---
 - name: Determine whether helm is already installed with the desired version
-  shell: "set -o pipefail && (apt list --manual-installed | grep helm | grep '{{ helm_version }}' || true) | wc -l"
+  shell: "set -o pipefail && (helm version | grep '{{ helm_version }}' || true) | wc -l"
   args:
     executable: /bin/bash
   register: helm_installed
@@ -21,5 +21,5 @@
 
     - name: Install Helm
       apt:
-        name: helm={{ helm_version }}
+        name: helm={{ helm_version }}-1
         update_cache: true
