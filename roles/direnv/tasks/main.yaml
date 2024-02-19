@@ -1,0 +1,23 @@
+---
+
+- name: Install apt dirnev package
+  apt:
+    name:
+      - direnv
+
+- name: Check ~{{ ansible_username }}/.zshrc exists
+  stat:
+    path: ~{{ ansible_username }}/.zshrc
+  register: stat_result
+
+- name: Ensure direnv is set in ~/.zshrc
+  when: stat_result.stat.exists
+  lineinfile:
+    path: "~{{ ansible_username }}/.zshrc"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - regexp: |
+        eval "\$\(direnv hook zsh\)"
+      line: |
+        eval "$(direnv hook zsh)"
