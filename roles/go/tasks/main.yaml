@@ -85,3 +85,10 @@
         export PATH=$\(echo $PATH \| sed
       line: |
         export PATH=$(echo $PATH | sed 's/:\([^/]\)/ \1/g')
+
+- name: Go install tools
+  shell: "go install {{ item }}"
+  become: false
+  args:
+    executable: /bin/bash
+  loop: "{{ go_install }}"

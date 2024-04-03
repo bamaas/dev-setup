@@ -1,5 +1,8 @@
 ---
 go_versions:
-  - "1.20"
+  - "1.22"
 
-use_go_version: "1.20"
+use_go_version: "1.22"
+
+go_install:
+  - github.com/mikefarah/yq/v4@v4.43.1
