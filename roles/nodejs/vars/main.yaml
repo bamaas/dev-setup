@@ -1,0 +1,8 @@
+---
+nvm_version: 0.39.7
+
+node_versions:
+  - 20.12.1
+
+# The default node version to use on the system
+node_version_global: "20.12.1"
