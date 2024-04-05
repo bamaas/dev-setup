@@ -1,43 +1,43 @@
 ---
 - name: Determine whether kubectl is already installed with the desired version
-  shell: "set -o pipefail && (apt list --manual-installed | grep kubectl | grep '{{ kubectl_version }}' || true) | wc -l"
+  shell: "set -o pipefail && (kubectl version || true) | (grep {{ version }} || true) | wc -l"
   args:
     executable: /bin/bash
   register: kubectl_installed
   changed_when: kubectl_installed.rc != 0
 
-- name: Install kubectl
+- name: Install kubectl binary
   when: kubectl_installed.stdout != '1'
   block:
-    - name: Install apt packages
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
+    - name: Create temporary directory for kubectl binary
+      delegate_to: localhost
+      become: false
+      tempfile:
+        state: directory
+        suffix: kubectlbin
+      register: tmpdir_kubectlbin
 
-    - name: Get public signing key
-      apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-      tags:
-        - kubernetes
+    - name: Download kubectl binary to controller
+      become: false
+      delegate_to: localhost
+      shell:
+        cmd: 'curl -LO "https://dl.k8s.io/release/v{{ version }}/bin/linux/amd64/kubectl"'
+        chdir: "{{ tmpdir_kubectlbin.path }}"
 
-    - name: Configure kubernetes apt repository
-      apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
-        state: present
-        filename: kubernetes.list
-        update_cache: true
-      tags:
-        - kubernetes
+    - name: Copy kubectl binary to remote
+      copy:
+        src: '{{ tmpdir_kubectlbin.path }}/kubectl'
+        dest: /usr/bin/kubectl
+        mode: '0751'
 
-    - name: Install kubectl
-      apt:
-        name: kubectl={{ kubectl_version }}
-        update_cache: true
-      tags:
-        - kubernetes
+  always:
+    - name: Recursively remove temporary kubectl binary directory
+      become: false
+      delegate_to: localhost
+      file:
+        path: "{{ tmpdir_kubectlbin.path }}"
+        state: absent
+
 
 - name: Set alias k for kubectl
   lineinfile:
