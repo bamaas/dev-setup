@@ -7,14 +7,14 @@ export DEBIAN_FRONTEND=noninteractive
 alias sudo="sudo -E"
 
 # If running inside a docker container
-if [[ -f "/.dockerenv" ]]
+if [[ -f "/.dockerenv" ]] || [[ "${DOCKER_BUILD}" == "true" ]]
 then
 	apt-get update
 	apt-get install sudo -y
 fi
 
 # Disallow root, unless in a docker container.
-if [[ ! -f "/.dockerenv" ]] && [[ $(whoami) == root ]]
+if [[ ! -f "/.dockerenv" ]] && [[ $(whoami) == root ]] && [[ "${DOCKER_BUILD}" != "true" ]]
 then
 	echo You should not be root to run this.
 	echo If you want to create a user, type 'y' to continue, else 'n' to exit
