@@ -47,6 +47,10 @@ then
 	exit $?
 fi
 
+# TODO: move this to ansible
+sudo apt-get install -y language-pack-en
+sudo update-locale
+
 # Clean up
 sudo rm -rf /var/lib/apt/lists/partial/*
 
