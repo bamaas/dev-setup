@@ -8,18 +8,13 @@
 
 - name: Install helm
   when: helm_installed.stdout != '1'
-  block:
-    - name: Configure Helm apt repository
-      copy:
-        content: deb [arch=amd64] https://baltocdn.com/helm/stable/debian/ all main
-        dest: /etc/apt/sources.list.d/helm.list
-        mode: '0644'
-
-    - name: Install Helm apt key
-      apt_key:
-        url: https://baltocdn.com/helm/signing.asc
-
-    - name: Install Helm
-      apt:
-        name: helm={{ helm_version }}-1
-        update_cache: true
+  unarchive:
+    src: https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  args:
+    creates: /usr/local/bin/helm

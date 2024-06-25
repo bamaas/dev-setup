@@ -68,3 +68,14 @@
     nvm use {{ node_version_global }}
   args:
     executable: /bin/bash
+
+- name: Load via .profile
+  lineinfile:
+    path: "~{{ ansible_username }}/.profile"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - regexp: |
+        source ~/.nvm/nvm.sh
+      line: |
+        source ~/.nvm/nvm.sh

@@ -1,6 +1,6 @@
 ---
 - name: Determine whether kind is already installed with the desired version
-  shell: "set -o pipefail && (kind version || true) | (grep {{ version }} || true) | wc -l"
+  shell: "set -o pipefail && (kind version || true) | (grep {{ kind_version }} || true) | wc -l"
   args:
     executable: /bin/bash
   register: kind_installed
@@ -21,7 +21,7 @@
       become: false
       delegate_to: localhost
       get_url:
-        url: "https://github.com/kubernetes-sigs/kind/releases/download/{{ version }}/kind-linux-amd64"
+        url: "https://github.com/kubernetes-sigs/kind/releases/download/{{ kind_version }}/kind-linux-amd64"
         dest: '{{ tmpdir_kindbin.path }}/kind'
         mode: '0777'
 

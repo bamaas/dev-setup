@@ -117,3 +117,9 @@
   args:
     executable: /bin/bash
   loop: "{{ python_cli_tools }}"
+
+- name: Ensure pipx path
+  shell: "~{{ ansible_username }}/.pyenv/shims/pipx ensurepath"
+  become: false
+  args:
+    executable: /bin/bash

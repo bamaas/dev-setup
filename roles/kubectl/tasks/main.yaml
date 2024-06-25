@@ -9,6 +9,11 @@
 - name: Install kubectl binary
   when: kubectl_installed.stdout != '1'
   block:
+    - name: Install curl package
+      apt:
+        name:
+          - curl
+
     - name: Create temporary directory for kubectl binary
       delegate_to: localhost
       become: false

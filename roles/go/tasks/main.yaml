@@ -57,8 +57,20 @@
         path: "{{ tmpdir_gvm_installer.path }}"
         state: absent
 
-- name: Install Go versions
-  shell: "export GVM_ROOT=~{{ ansible_username }}/.gvm && ./gvm install go{{ item }} -B"
+# Work around to be able to install desired versions because directly installing from the binary fails: ERROR: Failed to download binary go
+- name: Install go 1.20
+  shell: "export GVM_ROOT=~{{ ansible_username }}/.gvm && ./gvm install go1.20 -B"
+  args:
+    executable: /bin/bash
+    chdir: "~{{ ansible_username }}/.gvm/bin"
+
+- name: Install go versions
+  shell: |
+    set -o pipefail && \
+    export GVM_ROOT=~{{ ansible_username }}/.gvm && \
+    source $GVM_ROOT/scripts/gvm && \
+    gvm use go1.20 && \
+    gvm install go{{ item }}
   become: false
   loop: "{{ go_versions }}"
   args:
@@ -86,9 +98,9 @@
       line: |
         export PATH=$(echo $PATH | sed 's/:\([^/]\)/ \1/g')
 
-- name: Go install tools
-  shell: "go install {{ item }}"
-  become: false
-  args:
-    executable: /bin/bash
-  loop: "{{ go_install }}"
+# - name: Go install tools
+#   shell: "go install {{ item }}"
+#   become: false
+#   args:
+#     executable: /bin/bash
+#   loop: "{{ go_install }}"

@@ -24,8 +24,7 @@
     - packages
     - ssh
     - go
-    - docker
-    - kind
+    # - docker
     - kubectl
     - k9s
     - helm
@@ -36,3 +35,4 @@
     - python
     - direnv
     - nodejs
+    - kind

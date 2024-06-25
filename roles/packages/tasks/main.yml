@@ -3,6 +3,10 @@
 - name: Install apt packages
   apt:
     name:
+      - coreutils
+      - unzip
+      - curl
+      - findutils
       - dnsutils
       - jq
       - net-tools
