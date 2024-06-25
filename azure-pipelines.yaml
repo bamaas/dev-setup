@@ -22,4 +22,4 @@ steps:
   - script: make image/push
     displayName: Push image with latest tag
     env:
-      IMAGE_TAG: latest
+      IMAGE_TAG: $(Build.SourceVersion)
