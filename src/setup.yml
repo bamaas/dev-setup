@@ -24,6 +24,7 @@
     - packages
     - ssh
     - go
+    # - docker-cli
     # - docker
     - kubectl
     - k9s
