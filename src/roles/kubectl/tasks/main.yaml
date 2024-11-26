@@ -2,7 +2,7 @@
 - name: Determine whether kubectl is already installed with the desired version
   shell: "set -o pipefail && (kubectl version || true) | (grep {{ version }} || true) | wc -l"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: kubectl_installed
   changed_when: kubectl_installed.rc != 0
 
@@ -13,6 +13,7 @@
       apt:
         name:
           - curl
+      when: ansible_pkg_mgr == 'apt'
 
     - name: Create temporary directory for kubectl binary
       delegate_to: localhost
@@ -26,13 +27,13 @@
       become: false
       delegate_to: localhost
       shell:
-        cmd: 'curl -LO "https://dl.k8s.io/release/v{{ version }}/bin/linux/amd64/kubectl"'
+        cmd: 'curl -LO "https://dl.k8s.io/release/v{{ version }}/bin/{{ ansible_system | lower }}/{{ architecture }}/kubectl"'
         chdir: "{{ tmpdir_kubectlbin.path }}"
 
     - name: Copy kubectl binary to remote
       copy:
         src: '{{ tmpdir_kubectlbin.path }}/kubectl'
-        dest: /usr/bin/kubectl
+        dest: /usr/local/bin/kubectl
         mode: '0751'
 
   always:
@@ -43,11 +44,17 @@
         path: "{{ tmpdir_kubectlbin.path }}"
         state: absent
 
+- name: Set kubectl alias
+  block:
+    - name: Ensure ~/.{{ shell_name}}rc file exists
+      file:
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        state: touch
 
-- name: Set alias k for kubectl
-  lineinfile:
-    path: "~{{ ansible_username }}/.profile"
-    regexp: |
-      alias k='kubectl '
-    line: |
-      alias k='kubectl '
+    - name: Set alias k for kubectl
+      lineinfile:
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        regexp: |
+          alias k='kubectl '
+        line: |
+          alias k='kubectl '

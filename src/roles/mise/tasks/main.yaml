@@ -1,0 +1,35 @@
+---
+- name: Install pre-req packages
+  become: '{{ should_be_root }}'
+  package:
+    name: curl
+
+- name: Install mise
+  shell: |
+    curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+  args:
+    executable: "{{ ansible_user_shell }}"
+
+- name: Ensure ~/.{{ shell_name}}rc file exists
+  file:
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    state: touch
+
+- name: Ensure mise is set in ~/.{{ shell_name }}rc
+  lineinfile:
+    path: "~{{ ansible_username }}/.bashrc"
+    regexp: local\/bin\/mise activate 
+    line: |
+      eval "$(mise activate bash)"
+
+- name: Install Go 1.23
+  shell: |
+    mise use -g go@1.23
+  args:
+    executable: "{{ ansible_user_shell }}"
+
+- name: Install kubectl
+  shell: |
+    mise use -g kubectl@1.29
+  args:
+    executable: "{{ ansible_user_shell }}"

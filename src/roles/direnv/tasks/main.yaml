@@ -1,23 +1,59 @@
 ---
 
-- name: Install apt dirnev package
-  apt:
-    name:
-      - direnv
 
-- name: Check ~{{ ansible_username }}/.zshrc exists
+- name: Determine whether direnv is already installed with the desired version
+  shell: "set -o pipefail && (direnv version || true) | (grep {{ direnv_version }} || true) | wc -l"
+  args:
+    executable: "{{ ansible_user_shell }}"
+  register: direnv_installed
+  changed_when: direnv_installed.rc != 0
+
+- name: Install direnv binary
+  when: direnv_installed.stdout != '1'
+  block:
+    - name: Create temporary directory for direnv binary
+      delegate_to: localhost
+      become: false
+      tempfile:
+        state: directory
+        suffix: direnvbin
+      register: tmpdir_direnvbin
+
+    - name: Download direnv binary to controller
+      become: false
+      delegate_to: localhost
+      get_url:
+        url: "https://github.com/direnv/direnv/releases/download/{{ direnv_version }}/direnv.{{ ansible_system | lower }}-{{ architecture }}"
+        dest: '{{ tmpdir_direnvbin.path }}/direnv'
+        mode: '0777'
+
+    - name: Copy direnv binary to remote
+      copy:
+        src: '{{ tmpdir_direnvbin.path }}/direnv'
+        dest: /usr/local/bin/direnv
+        mode: '0755'
+
+  always:
+    - name: Recursively remove temporary direnv binary directory
+      become: false
+      delegate_to: localhost
+      file:
+        path: "{{ tmpdir_direnvbin.path }}"
+        state: absent
+
+- name: Esnure ~{{ ansible_username }}/.{{ shell_name }}rc exists
   stat:
-    path: ~{{ ansible_username }}/.zshrc
+    path: ~{{ ansible_username }}/.{{ shell_name }}rc
   register: stat_result
 
-- name: Ensure direnv is set in ~/.zshrc
+- name: Ensure direnv is set in {{ ansible_username }}/.{{ shell_name }}rc
   when: stat_result.stat.exists
   lineinfile:
-    path: "~{{ ansible_username }}/.zshrc"
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:
     - regexp: |
-        eval "\$\(direnv hook zsh\)"
+        eval "\$\(direnv hook {{ shell_name }}\)"
       line: |
-        eval "$(direnv hook zsh)"
+        eval "$(direnv hook {{ shell_name }})"

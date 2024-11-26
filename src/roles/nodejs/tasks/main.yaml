@@ -1,13 +1,13 @@
 ---
-- name: Install apt packages
-  apt:
-    name:
-      - curl
+- name: Install pre-req packages
+  become: '{{ should_be_root }}'
+  package:
+    name: curl
 
 - name: Determine whether nvm is already installed
   shell: set -o pipefail && (~{{ ansible_username }}/.nvm/nvm.sh && nvm --version | grep '{{ nvm_version }}' || true ) | wc -l
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: nvm_installed
   changed_when: nvm_installed.rc != 0
 
@@ -33,7 +33,7 @@
       shell: "{{ tmpdir_nvm_installer.path }}/nvm-installer.sh"
       become: false
       args:
-        executable: /bin/bash
+        executable: "{{ ansible_user_shell }}"
 
     - name: Set permissions
       file:
@@ -59,7 +59,7 @@
     nvm install {{ item }}
   loop: "{{ node_versions }}"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
 
 - name: Set node versions
   shell: |
@@ -67,15 +67,20 @@
     source ~{{ ansible_username }}/.nvm/nvm.sh && \
     nvm use {{ node_version_global }}
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
 
-- name: Load via .profile
+- name: Ensure ~/.{{ shell_name}}rc file exists
+  file:
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    state: touch
+
+- name: Load via ~/.{{ shell_name }}rc
   lineinfile:
-    path: "~{{ ansible_username }}/.profile"
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:
     - regexp: |
-        source ~/.nvm/nvm.sh
+        source \~\/\.nvm\/nvm\.sh
       line: |
         source ~/.nvm/nvm.sh

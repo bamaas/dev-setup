@@ -1,19 +1,18 @@
 ---
+
 - name: Determine whether helm is already installed with the desired version
   shell: "set -o pipefail && (helm version | grep '{{ helm_version }}' || true) | wc -l"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: helm_installed
   changed_when: helm_installed.rc != 0
 
 - name: Install helm
   when: helm_installed.stdout != '1'
   unarchive:
-    src: https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz
+    src: https://get.helm.sh/helm-v{{ helm_version }}-{{ ansible_system | lower }}-{{ architecture }}.tar.gz
     dest: /usr/local/bin
     extra_opts: "--strip-components=1"
-    owner: root
-    group: root
     mode: 0755
     remote_src: true
   args:

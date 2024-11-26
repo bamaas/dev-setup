@@ -2,13 +2,13 @@
 - name: Determine whether k9s is already installed with the desired version
   shell: "set -o pipefail && (k9s version || true) | (grep {{ k9s_version }} || true) | wc -l"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: k9s_installed
   changed_when: k9s_installed.rc != 0
 
 - name: Install k9s
   when: k9s_installed.stdout != '1'
   unarchive:
-    src: https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_Linux_x86_64.tar.gz
+    src: https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_{{ ansible_system }}_{{ architecture }}.tar.gz
     dest: /usr/local/bin/
     remote_src: true

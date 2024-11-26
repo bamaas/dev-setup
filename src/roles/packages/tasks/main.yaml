@@ -1,0 +1,32 @@
+---
+
+    - name: Install packages
+      become: '{{ should_be_root }}'
+      package:
+        name: '{{ item }}'
+        state: latest
+      loop: "{{ packages[ansible_pkg_mgr] }}"
+
+# - name: Install apt packages
+#   become:
+#   apt:
+#     name:
+#       # - coreutils
+#       # - unzip
+#       # - curl
+#       # - findutils
+#       # - dnsutils
+#       # - jq
+#       # - net-tools
+#       - netcat
+#       - pandoc
+#       - pigz
+#       # - rsync
+#       - tcpdump
+#       - tcptrack
+#       - telnet
+#       - tree
+#       - vim
+#       # - wget
+#       - dialog
+#       - shellcheck

@@ -3,6 +3,7 @@
   apt:
     name:
       - openssh-client
+  when: ansible_pkg_mgr == 'apt'
 
 - name: Disable sending locale via SSH
   lineinfile:

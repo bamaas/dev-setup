@@ -2,7 +2,7 @@
 - name: Determine whether OpenShift CLI is already installed with the desired version
   shell: "set -o pipefail && (oc version || true) | (grep {{ openshift_cli_version }} || true) | wc -l"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: oc_installed
   changed_when: oc_installed.rc != 0
 
@@ -21,15 +21,26 @@
       become: false
       delegate_to: localhost
       unarchive:
-        src: "https://github.com/openshift/origin/releases/download/{{ openshift_cli_version }}/openshift-origin-client-tools-{{ openshift_cli_version }}-0cbc58b-linux-64bit.tar.gz"
+        src: "https://github.com/okd-project/okd/releases/download/{{ openshift_cli_version }}/openshift-client-mac-{{ 'arm64-' if ansible_architecture == 'arm64' else '' }}{{ openshift_cli_version }}.tar.gz"
         dest: '{{ tmpdir_ocbin.path }}'
         remote_src: true
         list_files: yes
-      register: archive_contents
+      when: ansible_pkg_mgr == 'homebrew'
+
+    - name: Download OpenShift CLI binary to controller
+      become: false
+      delegate_to: localhost
+      unarchive:
+        src: "https://github.com/okd-project/okd/releases/download/{{ openshift_cli_version }}/openshift-client-linux-{{ 'arm64-' if ansible_architecture == 'arm64' else '' }}{{ openshift_cli_version }}.tar.gz"
+        dest: '{{ tmpdir_ocbin.path }}'
+        remote_src: true
+        list_files: yes
+      when: ansible_pkg_mgr != 'homebrew'
 
     - name: Copy oc binary to remote
+      become: true
       copy:
-        src: "{{ tmpdir_ocbin.path }}/{{ archive_contents.files[0].split('/')[0] }}/oc"
+        src: "{{ tmpdir_ocbin.path }}/oc"
         dest: /usr/local/bin/oc
         mode: '0751'
 

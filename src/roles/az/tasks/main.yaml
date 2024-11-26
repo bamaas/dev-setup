@@ -2,7 +2,7 @@
 - name: Determine whether Azure CLI is already installed with the desired version
   shell: "set -o pipefail && (apt list --manual-installed | grep azure-cli | grep '{{ azure_cli_version }}' || true) | wc -l"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: az_cli_installed
   changed_when: az_cli_installed.rc != 0
 

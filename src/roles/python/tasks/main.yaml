@@ -2,7 +2,7 @@
 - name: Determine whether PyEnv is already installed
   shell: "set -o pipefail && (~{{ ansible_username }}/.pyenv/bin/pyenv version || true) | wc -l"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: pyenv_installed
   changed_when: pyenv_installed.rc != 0
 
@@ -40,6 +40,7 @@
           - liblzma-dev
           - python3-openssl
           - git
+      when: ansible_pkg_mgr == 'apt'
 
     - name: Get pyenv install script
       become: false
@@ -52,7 +53,7 @@
       shell: "{{ tmpdir_pyenv_installer.path }}/pyenv-installer.sh"
       become: false
       args:
-        executable: /bin/bash
+        executable: "{{ ansible_user_shell }}"
 
     - name: Ensure PyEnv is set in ~/.profile
       lineinfile:
@@ -94,20 +95,20 @@
   loop: "{{ python_versions }}"
   register: pyenv_version_installed
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
 
 - name: Set default global Python version
   shell: "~{{ ansible_username }}/.pyenv/bin/pyenv global {{ python_version_global }}"
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
 
 ## TODO: Fix this hacky solution.
 - name: Install python packages
   shell: "~{{ ansible_username }}/.pyenv/shims/pip install {{ item }}"
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   loop: "{{ python_packages }}"
 
 ## TODO: Fix this hacky solution.
@@ -115,11 +116,11 @@
   shell: "~{{ ansible_username }}/.pyenv/shims/pipx install {{ item }}"
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   loop: "{{ python_cli_tools }}"
 
 - name: Ensure pipx path
   shell: "~{{ ansible_username }}/.pyenv/shims/pipx ensurepath"
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"

@@ -9,18 +9,22 @@
       - lsb-release
       - apt-transport-https
 
-- name: add docker apt key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+- name: Add Docker apt repo
+  shell: |
+    set -o pipefail
+    echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
+    apt-get update
+  args:
+    executable: "{{ ansible_user_shell }}"
 
-- name: add docker apt repo
-  apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} jammy stable"
-    state: present
-    update_cache: yes
+- name: Add Docker apt key
+  shell: |
+    set -o pipefail
+    curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null
+  args:
+    executable: "{{ ansible_user_shell }}"
 
-- name: Install Docker CLI
+- name: Install docker-ce-cli
   apt:
     name:
       - docker-ce-cli

@@ -1,17 +1,33 @@
 ---
-- name: Install apt packages
+
+- name: Install pre-requisite apt packages
+  become: true
   apt:
     name:
       - bsdmainutils
       - bison
       - git
       - curl
+      - mercurial
+      - make
+      - binutils
+      - gcc
+      - build-essential
+  when: ansible_pkg_mgr == 'apt'
+
+- name: Install pre-requisite homebrew packages
+  become: false
+  homebrew:
+    name:
+      - mercurial
+      - bison
+  when: ansible_pkg_mgr == 'homebrew'
 
 - name: Determine whether GVM is already installed with the desired version
   shell: "set -o pipefail && (gvm version 2>/dev/null || true) | (grep 'Go Version Manager' || true) | wc -l"
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   register: gvm_installed
   changed_when: gvm_installed.rc != 0
 
@@ -38,9 +54,21 @@
       args:
         executable: /bin/bash
 
-    - name: Ensure gvm is set in ~/.profile
+    - name: Change file ownership, group and permissions
+      become: true
+      file:
+        path: "~{{ ansible_username }}/.gvm/pkgsets"
+        owner: "{{ ansible_username }}"
+        recurse: true
+
+    - name: Ensure ~/.{{ shell_name}}rc file exists
+      file:
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        state: touch
+
+    - name: Ensure gvm is set in ~/.{{ shell_name }}rc
       lineinfile:
-        path: "~{{ ansible_username }}/.profile"
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
         regexp: /.gvm/scripts/gvm
         line: |
           [[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
@@ -61,7 +89,7 @@
 - name: Install go 1.20
   shell: "export GVM_ROOT=~{{ ansible_username }}/.gvm && ./gvm install go1.20 -B"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
     chdir: "~{{ ansible_username }}/.gvm/bin"
 
 - name: Install go versions
@@ -74,7 +102,7 @@
   become: false
   loop: "{{ go_versions }}"
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
     chdir: "~{{ ansible_username }}/.gvm/bin"
 
 - name: Set default Go version
@@ -85,11 +113,11 @@
     gvm use go{{ use_go_version }} --default
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
 
 - name: Implement WSL2 path workaround for issue https://github.com/moovweb/gvm/issues/445
   lineinfile:
-    path: "~{{ ansible_username }}/.profile"
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:
@@ -97,10 +125,13 @@
         export PATH=$\(echo $PATH \| sed
       line: |
         export PATH=$(echo $PATH | sed 's/:\([^/]\)/ \1/g')
+  when: ansible_distribution != 'MacOSX'
 
-# - name: Go install tools
-#   shell: "go install {{ item }}"
-#   become: false
-#   args:
-#     executable: /bin/bash
-#   loop: "{{ go_install }}"
+- name: Go install tools
+  shell: |
+    source ~{{ ansible_username }}/.gvm/scripts/gvm && \
+    go install {{ item }}
+  become: false
+  args:
+    executable: "{{ ansible_user_shell }}"
+  loop: "{{ go_install }}"

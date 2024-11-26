@@ -13,3 +13,9 @@ image/build:																				## Build a container image
 
 image/push:																					## Push a container image
 	docker push ${IMAGE}
+
+run_playbook:																				## Run the playbook
+	ansible-playbook -i inventory/hosts playbook.yml
+
+install:
+	./src/install.sh

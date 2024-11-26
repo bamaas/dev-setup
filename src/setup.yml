@@ -1,39 +1,68 @@
 ---
 
-# - name: Print facts
-#   hosts: localhost
-#   gather_facts: true
-#   tasks:
-#     - name: Print all available facts
-#       debug:
-#         var: ansible_facts
-
-- name: Setup WSL2 work environment
+- name: Print facts
   hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Print all available facts
+      debug:
+        var: ansible_facts
+
+- name: Setup work environment
+  hosts: localhost
+  vars:
+    should_be_root:  "{{ true if ansible_pkg_mgr != 'homebrew' else false }}"
+  # become: "{{ should_be_root }}"
   become: true
   gather_facts: true
   pre_tasks:
     - name: Set ansible_username
       set_fact:
         ansible_username: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
-        ansible_os_family: Debian
-        os_family: Debian
+        # ansible_os_family: Debian
+        # os_family: Debian
+    - name: Set the shell name
+      set_fact:
+        shell_name: "{{ lookup('env', 'SHELL') | regex_replace('^.*/', '') }}"
 
+    - name: Set architecture fact based on ansible_architecture
+      set_fact:
+        architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
   roles:
-    - certs
-    - packages
-    - ssh
-    - go
+    # Works on MacOS
+    # - packages
+    # - tar
+    # - nodejs
+    # - go
+    # - openshift
+    # - kind
+    # - kubectl
+    # - k9s
+    # - helm
+    # - direnv
+
+    # Works on Ubuntu
+    # - packages
+    # - tar
+    # - nodejs
+    # - go
+    # - openshift
+    # - kind
+    # - kubectl
+    # - k9s
+    # - helm
+    # - direnv
+    # - python
+    # - az
+    # - zsh
+
+
+    
+    ####T TODO
+    # - certs
+    # - ssh
+    # - az
+    # - zsh
+    # - python
     # - docker-cli
     # - docker
-    - kubectl
-    - k9s
-    - helm
-    - az
-    - openshift
-    - certs
-    - zsh
-    - python
-    - direnv
-    - nodejs
-    - kind
