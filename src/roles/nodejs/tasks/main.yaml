@@ -2,7 +2,7 @@
 - name: Install pre-req packages
   become: '{{ should_be_root }}'
   package:
-    name: curl
+    - curl
 
 - name: Determine whether nvm is already installed
   shell: set -o pipefail && (~{{ ansible_username }}/.nvm/nvm.sh && nvm --version | grep '{{ nvm_version }}' || true ) | wc -l

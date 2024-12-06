@@ -8,7 +8,7 @@
 
 - name: Install k9s
   when: k9s_installed.stdout != '1'
-  unarchive:
-    src: https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_{{ ansible_system }}_{{ architecture }}.tar.gz
-    dest: /usr/local/bin/
-    remote_src: true
+  shell: |
+    mise use -g k9s@{{ k9s_version }}
+  args:
+    executable: "{{ ansible_user_shell }}"

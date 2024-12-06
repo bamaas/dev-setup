@@ -29,6 +29,24 @@
       set_fact:
         architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
   roles:
+    - role: mise
+      install: 
+        - kind@0.25.0 --global
+        - kubectl@1.29.11 --global
+        - yq@4.44.5 --global
+        - helm@3.16.3 --global
+        - direnv@2.35.0 --global
+        - python@3.13.0 --global
+        - go@1.23.3 --global
+        - node@20.12.1 --global
+        - jq@1.7.1 --global
+
+
+    # - role: mise
+    #   install: pipx@latest --global --force
+    # - role: pipx
+    #   install: ansible@4.6.0
+
     # Works on MacOS
     # - packages
     # - tar

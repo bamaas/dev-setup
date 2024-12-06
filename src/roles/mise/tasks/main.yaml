@@ -4,32 +4,37 @@
   package:
     name: curl
 
-- name: Install mise
-  shell: |
-    curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+- name: Determine whether mise is already installed
+  shell: "set -o pipefail && (mise version || true) | wc -l"
   args:
     executable: "{{ ansible_user_shell }}"
+  register: mise_installed
+  changed_when: mise_installed.rc != 0
 
-- name: Ensure ~/.{{ shell_name}}rc file exists
-  file:
-    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-    state: touch
+- name: Install Mise
+  when: mise_installed.stdout != '1'
+  block:
+    - name: Install mise
+      become: true
+      shell: |
+        curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+      args:
+        executable: "{{ ansible_user_shell }}"
 
-- name: Ensure mise is set in ~/.{{ shell_name }}rc
-  lineinfile:
-    path: "~{{ ansible_username }}/.bashrc"
-    regexp: local\/bin\/mise activate 
-    line: |
-      eval "$(mise activate bash)"
+    - name: Ensure ~/.{{ shell_name}}rc file exists
+      file:
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        state: touch
 
-- name: Install Go 1.23
+    - name: Ensure mise is set in ~/.{{ shell_name }}rc
+      lineinfile:
+        path: "~{{ ansible_username }}/.bashrc"
+        regexp: local\/bin\/mise activate 
+        line: |
+          eval "$(mise activate bash)"
+
+- name: Install {{ install}}
   shell: |
-    mise use -g go@1.23
-  args:
-    executable: "{{ ansible_user_shell }}"
-
-- name: Install kubectl
-  shell: |
-    mise use -g kubectl@1.29
+    mise use {{ install }}
   args:
     executable: "{{ ansible_user_shell }}"

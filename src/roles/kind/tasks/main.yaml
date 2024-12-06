@@ -6,35 +6,9 @@
   register: kind_installed
   changed_when: kind_installed.rc != 0
 
-- name: Install kind binary
+- name: Install kind
   when: kind_installed.stdout != '1'
-  block:
-    - name: Create temporary directory for kind binary
-      delegate_to: localhost
-      become: false
-      tempfile:
-        state: directory
-        suffix: kindbin
-      register: tmpdir_kindbin
-
-    - name: Download kind binary to controller
-      become: false
-      delegate_to: localhost
-      get_url:
-        url: "https://github.com/kubernetes-sigs/kind/releases/download/{{ kind_version }}/kind-{{ ansible_system | lower }}-{{ architecture }}"
-        dest: '{{ tmpdir_kindbin.path }}/kind'
-        mode: '0777'
-
-    - name: Copy kind binary to remote
-      copy:
-        src: '{{ tmpdir_kindbin.path }}/kind'
-        dest: /usr/local/bin/kind
-        mode: '0751'
-
-  always:
-    - name: Recursively remove temporary kind binary directory
-      become: false
-      delegate_to: localhost
-      file:
-        path: "{{ tmpdir_kindbin.path }}"
-        state: absent
+  shell: |
+    mise use -g kind@{{ kind_version }}
+  args:
+    executable: "{{ ansible_user_shell }}"
