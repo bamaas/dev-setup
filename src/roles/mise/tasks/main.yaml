@@ -21,15 +21,3 @@
     regexp: local\/bin\/mise activate 
     line: |
       eval "$(mise activate bash)"
-
-- name: Install Go 1.23
-  shell: |
-    mise use -g go@1.23
-  args:
-    executable: "{{ ansible_user_shell }}"
-
-- name: Install kubectl
-  shell: |
-    mise use -g kubectl@1.29
-  args:
-    executable: "{{ ansible_user_shell }}"
