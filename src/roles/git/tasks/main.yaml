@@ -36,6 +36,11 @@
   args:
     executable: "{{ ansible_user_shell }}"
 
+- name: Ensure ~/.{{ shell_name}}rc file exists
+  file:
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    state: touch
+
 - name: Configure Git Credential Manager
   lineinfile:
     path: "~{{ ansible_username }}/.{{ shell_name }}rc"
