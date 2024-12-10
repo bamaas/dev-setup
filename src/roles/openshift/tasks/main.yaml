@@ -31,11 +31,11 @@
       become: false
       delegate_to: localhost
       unarchive:
-        src: "https://github.com/okd-project/okd/releases/download/{{ openshift_cli_version }}/openshift-client-linux-{{ 'arm64-' if ansible_architecture == 'arm64' else '' }}{{ openshift_cli_version }}.tar.gz"
+        src: "https://github.com/okd-project/okd/releases/download/{{ openshift_cli_version }}/openshift-client-linux-{{ 'arm64-' if ansible_architecture == 'arm64' else '' }}{{ 'arm64-' if ansible_architecture == 'aarch64' else '' }}{{ openshift_cli_version }}.tar.gz"
         dest: '{{ tmpdir_ocbin.path }}'
         remote_src: true
         list_files: yes
-      when: ansible_pkg_mgr != 'homebrew'
+      when: ansible_pkg_mgr == 'apt'
 
     - name: Copy oc binary to remote
       become: true
