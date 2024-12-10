@@ -33,8 +33,9 @@
         line: |
           eval "$(mise activate bash)"
 
-- name: Install {{ install}}
+- name: Mise use {{ item }}
   shell: |
-    mise use {{ install }}
+    mise use {{ item }}
   args:
     executable: "{{ ansible_user_shell }}"
+  loop: "{{ mise_use }}"

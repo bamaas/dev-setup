@@ -23,64 +23,77 @@
         # os_family: Debian
     - name: Set the shell name
       set_fact:
-        shell_name: "{{ lookup('env', 'SHELL') | regex_replace('^.*/', '') }}"
+        shell_name: "{{ ansible_user_shell | regex_replace('^.*/', '') }} | default('bash') }}"
 
     - name: Set architecture fact based on ansible_architecture
       set_fact:
         architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
   roles:
+
+    - role: packages
+      packages:
+        apt:
+          - tar
+          - curl
+          - findutils
+          - unzip
+          - coreutils
+          - dnsutils
+          - net-tools
+          - rsync
+          - wget
+          - vim
+        homebrew:
+          - gnu-tar
+          - curl
+          - findutils
+          - unzip 
+          - coreutils
+          # - dnsutils - not available in brew
+          - net-tools
+          - rsync
+          - wget
+          - vim
+
     - role: mise
-      install: 
+      mise_use: 
         - kind@0.25.0 --global
         - kubectl@1.29.11 --global
         - yq@4.44.5 --global
         - helm@3.16.3 --global
-        - direnv@2.35.0 --global
-        - python@3.13.0 --global
-        - go@1.23.3 --global
         - node@20.12.1 --global
         - jq@1.7.1 --global
+        - k9s@0.32.7 --global
+        - gomigrate@4.18.1 --global
+        - sops@3.9.2 --global
+        - terraform@1.10.1 --global
 
+    - role: go
+      go_global: "1.23.3"
+      go_install:
+        - github.com/golangci/golangci-lint/cmd/golangci-lint@v1.60.2
 
-    # - role: mise
-    #   install: pipx@latest --global --force
-    # - role: pipx
-    #   install: ansible@4.6.0
+    - role: python
+      python_global: "3.13.0"
+      python_versions: []
+      python_packages:
+        - setuptools==58.0.3
+        - wheel==0.37.0
+        - ipython
+        - requests
+      python_cli_tools:
+        - commitizen
+        - pre-commit
+        - ruff
+        - yamllint
 
-    # Works on MacOS
-    # - packages
-    # - tar
-    # - nodejs
-    # - go
-    # - openshift
-    # - kind
-    # - kubectl
-    # - k9s
-    # - helm
-    # - direnv
+    - role: nodejs
+      nodejs_global: "20.12.1"
+      nodejs_versions: []
+      nodejs_packages: []
 
-    # Works on Ubuntu
-    # - packages
-    # - tar
-    # - nodejs
-    # - go
-    # - openshift
-    # - kind
-    # - kubectl
-    # - k9s
-    # - helm
-    # - direnv
-    # - python
-    # - az
-    # - zsh
+    # - role: openshift
+    #   openshift_version: 4.15.0-0.okd-2024-03-10-010116
 
-
-    
-    ####T TODO
-    # - certs
-    # - ssh
-    # - az
-    # - zsh
-    # - python
-    # - docker-cli
-    # - docker
+    - role: direnv
+      direnv_version: "2.35.0"

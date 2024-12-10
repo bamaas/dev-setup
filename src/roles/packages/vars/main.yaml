@@ -9,19 +9,18 @@ packages:
     - unzip
     - coreutils
     - dnsutils
-    - jq
     - net-tools
     - rsync
     - wget
     - vim
 
   homebrew:
+    - gnu-tar
     - curl
     - findutils
     - unzip 
     - coreutils
     # - dnsutils - not available in brew
-    - jq
     - net-tools
     - rsync
     - wget

@@ -1,19 +1,11 @@
 ---
-python_versions:
-  - 3.11.6
 
 # The default Python version to use on the system
-python_version_global: "3.11.6"
+python_global: "3.11.6"
 
-python_packages:
-  - setuptools==58.0.3
-  - wheel==0.37.0
-  - ipython
-  - requests
-  - pipx
+# The list of Python versions to install
+python_versions: []
 
-python_cli_tools:
-  - yamllint
-  - ruff
-  - pre-commit
-  - commitizen
+python_packages: []
+
+python_cli_tools: []

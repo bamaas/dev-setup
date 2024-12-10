@@ -1,86 +1,19 @@
 ---
-- name: Install pre-req packages
-  become: '{{ should_be_root }}'
-  package:
-    - curl
 
-- name: Determine whether nvm is already installed
-  shell: set -o pipefail && (~{{ ansible_username }}/.nvm/nvm.sh && nvm --version | grep '{{ nvm_version }}' || true ) | wc -l
-  args:
-    executable: "{{ ansible_user_shell }}"
-  register: nvm_installed
-  changed_when: nvm_installed.rc != 0
-
-- name: Install nvm
-  when: nvm_installed.stdout != '1'
-  block:
-
-    - name: Create temporary directory
-      become: false
-      tempfile:
-        state: directory
-        suffix: nvm
-      register: tmpdir_nvm_installer
-
-    - name: Get nvm install script
-      become: false
-      get_url:
-        url: https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh
-        dest: "{{ tmpdir_nvm_installer.path }}/nvm-installer.sh"
-        mode: '0755'
-
-    - name: Execute nvm install script
-      shell: "{{ tmpdir_nvm_installer.path }}/nvm-installer.sh"
-      become: false
-      args:
-        executable: "{{ ansible_user_shell }}"
-
-    - name: Set permissions
-      file:
-        path: ~{{ ansible_username }}/.nvm/nvm.sh
-        mode: '0755'
-
-  always:
-    - name: Recursively remove temporary installer directory
-      file:
-        path: "{{ tmpdir_nvm_installer.path }}"
-        state: absent
-
-  rescue:
-    - name: Recursively remove temporary installer directory
-      file:
-        path: "{{ tmpdir_nvm_installer.path }}"
-        state: absent
-
-- name: Install node versions
+- name: Install NodeJS versions
   shell: |
-    set -o pipefail && \
-    source ~{{ ansible_username }}/.nvm/nvm.sh && \
-    nvm install {{ item }}
-  loop: "{{ node_versions }}"
+    eval "$(mise activate bash)" && \
+    mise install node@{{ item }}
+  become: false
   args:
     executable: "{{ ansible_user_shell }}"
+  loop: "{{ nodejs_versions }}"
 
-- name: Set node versions
+- name: Npm install
   shell: |
-    set -o pipefail &&
-    source ~{{ ansible_username }}/.nvm/nvm.sh && \
-    nvm use {{ node_version_global }}
+    eval "$(mise activate bash)" && \
+    npm install {{ item }}
+  become: false
   args:
     executable: "{{ ansible_user_shell }}"
-
-- name: Ensure ~/.{{ shell_name}}rc file exists
-  file:
-    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-    state: touch
-
-- name: Load via ~/.{{ shell_name }}rc
-  lineinfile:
-    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-  loop:
-    - regexp: |
-        source \~\/\.nvm\/nvm\.sh
-      line: |
-        source ~/.nvm/nvm.sh
+  loop: "{{ nodejs_packages }}"
