@@ -5,7 +5,7 @@
     path: ~{{ ansible_username }}/.{{ shell_name }}rc
   register: stat_result
 
-- name: Ensure direnv is set in {{ ansible_username }}/.{{ shell_name }}rc
+- name: Ensure direnv is set in ~{{ ansible_username }}/.{{ shell_name }}rc
   when: stat_result.stat.exists
   lineinfile:
     path: "~{{ ansible_username }}/.{{ shell_name }}rc"
