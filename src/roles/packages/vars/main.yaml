@@ -2,26 +2,6 @@
 
 packages:
 
-  apt:
-    - tar
-    - curl
-    - findutils
-    - unzip
-    - coreutils
-    - dnsutils
-    - net-tools
-    - rsync
-    - wget
-    - vim
+  apt: []
 
-  homebrew:
-    - gnu-tar
-    - curl
-    - findutils
-    - unzip 
-    - coreutils
-    # - dnsutils - not available in brew
-    - net-tools
-    - rsync
-    - wget
-    - vim
+  homebrew: []

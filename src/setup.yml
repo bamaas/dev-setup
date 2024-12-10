@@ -67,9 +67,6 @@
         - gomigrate@4.18.1 --global
         - sops@3.9.2 --global
         - terraform@1.10.1 --global
-        - docker-compose@2.31.0 --global
-    
-    # - role: git
 
     - role: go
       go_global: "1.23.3"
@@ -102,3 +99,5 @@
       openshift_version: 4.15.0-0.okd-2024-03-10-010116
 
     - role: azure-cli
+
+    - role: docker
