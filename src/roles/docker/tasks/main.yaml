@@ -80,14 +80,14 @@
         owner: "{{ ansible_username }}"
         group: "{{ ansible_username }}"
 
-    - name: Start docker service
-      shell: |
-        set -o pipefail
-        if [[ -z $(ps aux | grep dockerd | grep -v grep) ]]; then
-          sudo service docker start
-        fi
-      args:
-        executable: "{{ ansible_user_shell }}"
+    # - name: Start docker service
+    #   shell: |
+    #     set -o pipefail
+    #     if [[ -z $(ps aux | grep dockerd | grep -v grep) ]]; then
+    #       sudo service docker start
+    #     fi
+    #   args:
+    #     executable: "{{ ansible_user_shell }}"
 
     - name: Add local user to docker group
       user:
