@@ -11,7 +11,7 @@ jobs:
       vmImage: macOS-latest
     steps:
       - script: make install
-        displayName: install
+        displayName: Install
 
   - job:
     displayName: Build Ubuntu image
