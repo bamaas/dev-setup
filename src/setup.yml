@@ -48,7 +48,7 @@
           - unzip 
           - coreutils
           # - dnsutils - not available in brew
-          - net-tools
+          # - net-tools
           - rsync
           - wget
           - vim
