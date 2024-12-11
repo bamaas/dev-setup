@@ -19,91 +19,21 @@
           write_zshrc: true
 
 - name: Install autojump
-  block:
-    - name: Install apt package
-      become: true
-      apt:
-        name: python-is-python3
+  include_tasks: install_autojump.yaml
 
-    - name: Create a directory if it does not exist
-      file:
-        path: ~{{ ansible_username }}/.zsh
-        state: directory
-        mode: '0755'
+- name: Install pure theme
+  include_tasks: install_pure_theme.yaml
 
-    - name: Clone autojump repo
-      git:
-        repo: https://github.com/wting/autojump.git
-        dest: ~{{ ansible_username }}/.zsh/autojump
+- name: Install zsh-auto-suggestions
+  include_task: install_zsh_auto_suggestions.yaml
 
-    - name: Execute install script autojump
-      become: false
-      shell: "SHELL=/bin/zsh python3 ./install.py"
-      args:
-        chdir: ~{{ ansible_username }}/.zsh/autojump
-        executable: /bin/zsh
+- name: Install ZSH Syntax Highlighting
+  include_task: install_zsh_syntax_highlighting.yaml
 
-    - name: Ensure autojump is set in ~/.zshrc
-      lineinfile:
-        path: "~{{ ansible_username }}/.zshrc"
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      loop:
-        - regexp: |
-            autojump.sh \]\] && source
-          line: |
-            [[ -s ~{{ ansible_username }}/.autojump/etc/profile.d/autojump.sh ]] && source ~{{ ansible_username }}/.autojump/etc/profile.d/autojump.sh
-        - regexp: |
-            autoload -U compinit && compinit -u
-          line: |
-            autoload -U compinit && compinit -u
-
-- name: Get zsh-autosuggestions
-  git:
-    repo: https://github.com/zsh-users/zsh-autosuggestions
-    dest: "~{{ ansible_username }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-
-- name: Get zsh-syntax-highlighting
-  git:
-    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
-    dest: "~{{ ansible_username }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-
-- name: Get pure theme
-  block:
-    - name: Create a directory if it does not exist
-      file:
-        path: ~{{ ansible_username }}/.zsh
-        state: directory
-        mode: '0755'
-
-    - name: Get pure theme repo
-      git:
-        repo: "https://github.com/sindresorhus/pure.git"
-        dest: "~{{ ansible_username }}/.zsh/pure"
-
-    - name: Set fpath
-      lineinfile:
-        path: "~{{ ansible_username }}/.zshrc"
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      loop:
-        - regexp: |
-            HOME/.zsh/pure
-          line: |
-            fpath+=($HOME/.zsh/pure)
-        - regexp: |
-            autoload -U promptinit; promptinit
-          line: |
-            autoload -U promptinit; promptinit
-        - regexp: |
-            prompt pure
-          line: |
-            prompt pure
-
-- name: Source .profile
+- name: Source .bashrc
   lineinfile:
     path: "~{{ ansible_username }}/.zshrc"
     regexp: |
-      && emulate sh -c 'source ~/.profile
+      && emulate sh -c 'source ~/.bashrc
     line: |
-      [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+      [[ -e ~/.bashrc ]] && emulate sh -c 'source ~/.bashrc'

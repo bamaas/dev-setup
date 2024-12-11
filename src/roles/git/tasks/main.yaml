@@ -15,36 +15,6 @@
     line: |
       alias g='git '
 
-- name: Determine whether Git Credential Manager is already installed with the desired version
-  shell: "set -o pipefail && (git-credential-manager --version || true) | (grep {{ gcm_version }} || true) | wc -l"
-  args:
-    executable: "{{ ansible_user_shell }}"
-  register: gcm_installed
-  changed_when: gcm_installed.rc != 0
-
 - name: Install Git Credential Manager
-  when: gcm_installed.stdout != '1'
-  become: true
-  unarchive:
-    src: https://github.com/git-ecosystem/git-credential-manager/releases/download/v{{ gcm_version }}/gcm-{{ ansible_system | lower }}_{{ architecture }}.{{ gcm_version }}.tar.gz
-    dest: /usr/local/bin/
-    remote_src: true
-
-- name: Init Git Credential Manager
-  shell: "git-credential-manager configure"
-  become: false
-  args:
-    executable: "{{ ansible_user_shell }}"
-
-- name: Ensure ~/.{{ shell_name}}rc file exists
-  file:
-    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-    state: touch
-
-- name: Configure Git Credential Manager
-  lineinfile:
-    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-    regexp: |
-      export GCM_CREDENTIAL_STORE=plaintext
-    line: |
-      export GCM_CREDENTIAL_STORE=plaintext
+  when: install_gcm
+  include_tasks: install_gcm.yaml

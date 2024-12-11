@@ -101,3 +101,5 @@
     - role: azure-cli
 
     - role: docker
+
+    - role: zsh

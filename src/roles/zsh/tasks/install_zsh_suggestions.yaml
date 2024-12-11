@@ -1,0 +1,23 @@
+- name: Get zsh-autosuggestions
+  when: ansible_distribution == 'Ubuntu'
+  git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "~{{ ansible_username }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+
+- name:  Install zsh-autosuggestions
+  when: ansible_distribution == 'MacOSX'
+  block:
+    - name: Install zsh-autosuggestions homebrew package
+      homebrew:
+        name: zsh-autosuggestions
+
+    - name: Set in ~/.zshrc
+      lineinfile:
+        path: "~{{ ansible_username }}/.zshrc"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - regexp: |
+            /share\/zsh-autosuggestions\/zsh-autosuggestions\.zsh
+          line: |
+            source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
