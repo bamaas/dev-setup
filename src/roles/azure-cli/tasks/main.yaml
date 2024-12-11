@@ -7,7 +7,7 @@
   changed_when: az_cli_installed.rc != 0
 
 - name: Install Azure CLI
-  when: az_cli_installed.stdout != '1' and ansible_pkg_mgr == 'apt'
+  when: az_cli_installed.stdout != '1' and ansible_distribution == 'Ubuntu'
   block:
     - name: Install apt packages
       apt:
@@ -58,11 +58,9 @@
           line: |
             source /etc/bash_completion.d/azure-cli
 
-    
-
 # Can't install specific version of Azure CLI with Homebrew
 - name: Install Azure CLI
-  when: az_cli_installed.stdout != '1' and ansible_pkg_mgr == 'homebrew'
+  when: ansible_distribution == 'MacOSX'
   block:
     - name: Install Azure CLI
       homebrew:
@@ -87,3 +85,9 @@
             etc\/bash_completion\.d\/az
           line: |
             source $(brew --prefix)/etc/bash_completion.d/az
+
+- name: Install Azure CLI DevOps extension
+  shell: az extension add --name azure-devops
+  args:
+    executable: "{{ ansible_user_shell }}"
+  when: install_az_cli_devops_extension

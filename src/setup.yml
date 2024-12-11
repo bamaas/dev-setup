@@ -19,8 +19,6 @@
     - name: Set ansible_username
       set_fact:
         ansible_username: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
-        # ansible_os_family: Debian
-        # os_family: Debian
     - name: Set the shell name
       set_fact:
         shell_name: "{{ ansible_user_shell | regex_replace('^.*/', '') }}"
@@ -99,7 +97,13 @@
       openshift_version: 4.15.0-0.okd-2024-03-10-010116
 
     - role: azure-cli
+      install_az_cli_devops_extension: true
 
     - role: docker
+      install_docker_compose: true
 
     - role: zsh
+      install_autojump: true
+      install_pure_theme: true
+      install_zsh_autosuggestions: true
+      install_zsh_syntax_highlighting: true

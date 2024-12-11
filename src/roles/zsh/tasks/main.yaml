@@ -19,21 +19,26 @@
           write_zshrc: true
 
 - name: Install autojump
+  when: install_autojump
   include_tasks: install_autojump.yaml
 
 - name: Install pure theme
+  when: install_pure_theme
   include_tasks: install_pure_theme.yaml
 
-- name: Install zsh-auto-suggestions
-  include_task: install_zsh_auto_suggestions.yaml
+- name: Install zsh-autosuggestions
+  when: install_zsh_autosuggestions
+  include_tasks: install_zsh_autosuggestions.yaml
 
 - name: Install ZSH Syntax Highlighting
-  include_task: install_zsh_syntax_highlighting.yaml
+  when: install_zsh_syntax_highlighting
+  include_tasks: install_zsh_syntax_highlighting.yaml
 
-- name: Source .bashrc
+- name: Source ~/.profile
+  when: ansible_distribution == 'MacOSX'
   lineinfile:
     path: "~{{ ansible_username }}/.zshrc"
     regexp: |
-      && emulate sh -c 'source ~/.bashrc
+      && emulate sh -c 'source ~/.profile
     line: |
-      [[ -e ~/.bashrc ]] && emulate sh -c 'source ~/.bashrc'
+      [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'

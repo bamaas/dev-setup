@@ -45,6 +45,11 @@
           - docker-ce-cli
           - containerd.io
           - docker-buildx-plugin
+        update_cache: true
+
+    - name: Install docker compose package
+      apt:
+        name:
           - docker-compose-plugin
         update_cache: true
 
@@ -113,7 +118,7 @@
         executable: "{{ ansible_user_shell }}"
       when: service_startup_set.stdout != '1'
 
-    - name: Set docker aliases
+    - name: Set docker alias
       lineinfile:
         path: "~{{ ansible_username }}/.{{ shell_name }}rc"
         regexp: "{{ item.regexp }}"
@@ -123,6 +128,14 @@
             alias d='docker '
           line: |
             alias d='docker '
+
+    - name: Set docker compose alias
+      lineinfile:
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      when: install_docker_compose
+      loop:
         - regexp: |
             alias dc='docker compose '
           line: |
