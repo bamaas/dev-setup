@@ -65,6 +65,7 @@
         - gomigrate@4.18.1 --global
         - sops@3.9.2 --global
         - terraform@1.10.1 --global
+        - argocd@2.13.1 --global
 
     - role: go
       go_global: "1.23.3"

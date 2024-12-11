@@ -35,10 +35,19 @@
   include_tasks: install_zsh_syntax_highlighting.yaml
 
 - name: Source ~/.profile
-  when: ansible_distribution == 'MacOSX'
+  when: ansible_distribution == 'Ubuntu'
   lineinfile:
     path: "~{{ ansible_username }}/.zshrc"
     regexp: |
       && emulate sh -c 'source ~/.profile
     line: |
       [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+
+# TODO: check if mise installed, if so run this task. Also add a similair task to the Mise role
+- name: Set mise in ~/.zshrc
+  lineinfile:
+    path: "~{{ ansible_username }}/.zshrc"
+    regexp: |
+      eval \"\$\(mise activate zsh\)\"
+    line: |
+      eval "$(mise activate zsh)"
