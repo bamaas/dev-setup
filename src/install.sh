@@ -13,7 +13,7 @@ fi
 
 ansible-galaxy install -r ${dir}/requirements.yaml
 
-run="ansible-playbook ${dir}/setup.yml -vvv --ask-become-pass"	# TODO: change this 
+run="ansible-playbook ${dir}/setup.yml -vvv"
 if [ "$(uname)" != "Darwin" ]; then
 	run="${run} --ask-become-pass"
 fi
