@@ -13,7 +13,7 @@
   vars:
     should_be_root:  "{{ true if ansible_pkg_mgr != 'homebrew' else false }}"
   # become: "{{ should_be_root }}"
-  become: true
+  become: false   # TODO: change to true
   gather_facts: true
   pre_tasks:
     - name: Set ansible_username
