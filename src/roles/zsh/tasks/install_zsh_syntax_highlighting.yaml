@@ -1,8 +1,26 @@
 - name: Get zsh-syntax-highlighting
   when: ansible_distribution == 'Ubuntu'
-  git:
-    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
-    dest: "~{{ ansible_username }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+  block:
+    - name: Get zsh-syntax-highlighting
+      git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: "~{{ ansible_username }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+
+    - name: Ensure ~/.zshrc file exists
+      file:
+        path: "~{{ ansible_username }}/.zshrc"
+        state: touch
+
+    - name: Set in ~/.zshrc
+      lineinfile:
+        path: "~{{ ansible_username }}/.zshrc"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - regexp: |
+            plugins\=\( \$plugins zsh\-syntax\-highlighting\)
+          line: |
+            plugins=( $plugins zsh-syntax-highlighting)
 
 - name:  Install zsh-syntax-highlighting
   when: ansible_distribution == 'MacOSX'
