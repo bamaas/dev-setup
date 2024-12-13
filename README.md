@@ -58,3 +58,9 @@ This pulls and runs the image interactively.
 12. Set keybindings. Open Windows terminal settings.json: `Arrow button -> settings -> gear icon bottom left`. Overwrite the 'actions' object with the 'actions' object from [keybindings.json](terminal/keybindings.json).
 
 13. Set background image.
+
+## TODO
+
+* Install oc in another user directory and add to path
+
+* Install mise in another user directory and add to path
