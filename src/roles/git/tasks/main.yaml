@@ -5,7 +5,7 @@
       become: "{{ should_be_root }}"
       package:
         name: git
-        state: latest   # TODO: change this change this
+        state: latest
 
 - name: Set alias g for Git
   lineinfile:

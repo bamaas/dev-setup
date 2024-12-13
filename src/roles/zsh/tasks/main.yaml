@@ -1,6 +1,7 @@
 ---
 
-- name: Apply tags to tasks within included file
+- name: Install oh my zsh
+  when: ansible_distribution == 'Ubuntu'
   include_role:
     name: gantsign.oh-my-zsh
   vars:
@@ -16,7 +17,23 @@
             - zsh-autosuggestions
           update_mode: reminder
           update_frequency: 3
-          write_zshrc: true
+          write_zshrc: false
+
+- name: Install oh my zsh
+  when: ansible_distribution == 'MacOSX'
+  include_role:
+    name: gantsign.oh-my-zsh
+  vars:
+    users:
+      - username: "{{ ansible_username }}"
+        oh_my_zsh:
+          theme: agnoster
+          plugins:
+            - git
+            - docker
+          update_mode: reminder
+          update_frequency: 3
+          write_zshrc: false
 
 - name: Install autojump
   when: install_autojump
@@ -42,12 +59,3 @@
       && emulate sh -c 'source ~/.profile
     line: |
       [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
-
-# TODO: check if mise installed, if so run this task. Also add a similair task to the Mise role
-- name: Set mise in ~/.zshrc
-  lineinfile:
-    path: "~{{ ansible_username }}/.zshrc"
-    regexp: |
-      eval \"\$\(mise activate zsh\)\"
-    line: |
-      eval "$(mise activate zsh)"

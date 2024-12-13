@@ -12,12 +12,11 @@
   changed_when: mise_installed.rc != 0
 
 - name: Install Mise
-  when: mise_installed.stdout != '1'
+  when: mise_installed.stdout != '1'    # TODO: this doesnt work correctly
   block:
     - name: Install mise
-      become: true
       shell: |
-        curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+        curl https://mise.run | MISE_INSTALL_PATH=~/.local/bin/mise sh
       args:
         executable: "{{ ansible_user_shell }}"
 
@@ -28,12 +27,13 @@
 
     - name: Ensure mise is set in ~/.{{ shell_name }}rc
       lineinfile:
-        path: "~{{ ansible_username }}/.bashrc"
-        regexp: local\/bin\/mise activate 
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        regexp: |
+          /\.local\/bin\/mise activate {{ shell_name }}\)"
         line: |
-          eval "$(mise activate bash)"
+          eval "$(~/.local/bin/mise activate {{ shell_name }})"
 
-- name: Mise use {{ item }}
+- name: Mise use
   shell: |
     mise use {{ item }}
   args:

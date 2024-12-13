@@ -22,10 +22,10 @@
     - name: Set the shell name
       set_fact:
         shell_name: "{{ ansible_user_shell | regex_replace('^.*/', '') }}"
-
     - name: Set architecture fact based on ansible_architecture
       set_fact:
         architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
+
   roles:
 
     - role: packages
@@ -47,19 +47,24 @@
           - findutils
           - unzip 
           - coreutils
-          # - dnsutils - not available in brew
-          # - net-tools
+          # - dnsutils # Not available in Brew
+          # - net-tools # Only available via Brew for Linux distros
           - rsync
           - wget
-          - vim
+          # - vim   # Already pre-installed
+
+    - role: zsh
+      install_autojump: true
+      install_pure_theme: true
+      install_zsh_autosuggestions: true
+      install_zsh_syntax_highlighting: true
 
     - role: mise
-      mise_use: 
+      mise_use:
         - kind@0.25.0 --global
         - kubectl@1.29.11 --global
         - yq@4.44.5 --global
         - helm@3.16.3 --global
-        - node@20.12.1 --global
         - jq@1.7.1 --global
         - k9s@0.32.7 --global
         - gomigrate@4.18.1 --global
@@ -102,9 +107,3 @@
 
     - role: docker
       install_docker_compose: true
-
-    - role: zsh
-      install_autojump: true
-      install_pure_theme: true
-      install_zsh_autosuggestions: true
-      install_zsh_syntax_highlighting: true

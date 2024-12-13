@@ -13,6 +13,7 @@ fi
 
 ansible-galaxy install -r ${dir}/requirements.yaml
 
+# TODO: build in a check if not running in a pipeline and darwin append --ask-become-pass
 run="ansible-playbook ${dir}/setup.yml -vvv"
 if [ "$(uname)" != "Darwin" ]; then
 	run="${run} --ask-become-pass"
