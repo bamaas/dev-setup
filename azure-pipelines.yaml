@@ -1,7 +1,9 @@
 ---
 
 trigger:
-  - "*"
+  branches:
+    include:
+      - "*"
 
 variables:
   - name: imageTag
