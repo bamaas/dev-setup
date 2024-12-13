@@ -11,6 +11,11 @@
       homebrew:
         name: zsh-syntax-highlighting
 
+    - name: Ensure ~/.zshrc file exists
+      file:
+        path: "~{{ ansible_username }}/.zshrc"
+        state: touch
+
     - name: Set in ~/.zshrc
       lineinfile:
         path: "~{{ ansible_username }}/.zshrc"

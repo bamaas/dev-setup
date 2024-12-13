@@ -4,3 +4,4 @@ COPY ./src .
 RUN DOCKER_BUILD=true \
     ./install.sh
 WORKDIR /src
+ENTRYPOINT ["/bin/zsh"]

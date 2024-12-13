@@ -12,6 +12,11 @@
         repo: "https://github.com/sindresorhus/pure.git"
         dest: "~{{ ansible_username }}/.zsh/pure"
 
+    - name: Ensure ~/.zshrc file exists
+      file:
+        path: "~{{ ansible_username }}/.zshrc"
+        state: touch
+
     - name: Set in ~/.zshrc
       lineinfile:
         path: "~{{ ansible_username }}/.zshrc"

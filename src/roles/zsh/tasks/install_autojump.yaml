@@ -24,6 +24,11 @@
         chdir: ~{{ ansible_username }}/.zsh/autojump
         executable: /bin/zsh
 
+    - name: Ensure ~/.zshrc file exists
+      file:
+        path: "~{{ ansible_username }}/.zshrc"
+        state: touch
+
     - name: Ensure autojump is set in ~/.zshrc
       lineinfile:
         path: "~{{ ansible_username }}/.zshrc"

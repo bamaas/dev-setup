@@ -2,7 +2,7 @@
 
 - name: Install NodeJS versions
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     mise install node@{{ item }}
   become: false
   args:
@@ -11,7 +11,7 @@
 
 - name: Npm install
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     npm install {{ item }}
   become: false
   args:

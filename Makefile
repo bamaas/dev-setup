@@ -1,6 +1,17 @@
 .PHONY: $(MAKECMDGOALS)
 .EXPORT_ALL_VARIABLES:
 
+# -------------- Install --------------
+
+install:																					## Run the entire installation process
+	./src/install.sh
+
+install/casks: 																				## Install Homebrew casks
+	./src/install_casks.sh
+
+run_playbook:																				## Run the playbook
+	ansible-playbook -i inventory/hosts playbook.yml
+
 # -------------- Image --------------
 
 IMAGE_REGISTRY=docker.io
@@ -14,8 +25,16 @@ image/build:																				## Build a container image
 image/push:																					## Push a container image
 	docker push ${IMAGE}
 
-run_playbook:																				## Run the playbook
-	ansible-playbook -i inventory/hosts playbook.yml
+image/run:																					## Run the devcontainer image
+	docker run \
+	-it \
+	--rm \
+	--name devcontainer \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	-v ${PWD}:/src \
+	${IMAGE}
 
-install:
-	./src/install.sh
+image/tag:																					## Tag the image as latest
+	docker tag \
+	${IMAGE_REGISTRY/${IMAGE_REPOSITORY}}:${OLD_TAG} \
+	${IMAGE_REGISTRY}/${IMAGE_REPOSITORY}:${NEW_TAG}

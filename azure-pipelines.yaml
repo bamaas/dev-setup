@@ -1,11 +1,15 @@
 ---
 
 trigger:
-  - main
-  - mise-setup
+  - "*"
+
+variables:
+  - name: imageTag
+    value: $(Build.SourceVersion)
+      
 
 jobs:
-  - job:
+  - job: macBuild
     displayName: Install on MacOS
     pool:
       vmImage: macOS-latest
@@ -13,8 +17,10 @@ jobs:
       - script: make install
         displayName: Install
 
-  - job:
-    displayName: Build Ubuntu image
+  - job: linuxBuild
+    displayName: Build devcontainer image
+    dependsOn: macBuild
+    condition: succeeded()
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -27,9 +33,21 @@ jobs:
       - script: make image/build
         displayName: Build image
         env:
-          IMAGE_TAG: $(Build.SourceVersion)
+          IMAGE_TAG: $(imageTag)
 
-      - script: make image/push
-        displayName: Push image with latest tag
-        env:
-          IMAGE_TAG: $(Build.SourceVersion)
+      - ${{ if eq( variables['Build.SourceBranch'], 'refs/heads/master' ) }}:
+          - script: make image/push
+            displayName: Push image
+            env:
+              IMAGE_TAG: $(imageTag)
+
+          - script: make image/tag
+            displayName: Retag image to latest
+            env:
+              OLD_TAG: $(imageTag)
+              NEW_TAG: latest
+
+          - script: make image/push
+            displayName: Push image with latest tag
+            env:
+              IMAGE_TAG: latest

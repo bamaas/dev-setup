@@ -35,6 +35,7 @@
 
 - name: Mise use
   shell: |
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     mise use {{ item }}
   args:
     executable: "{{ ansible_user_shell }}"

@@ -1,6 +1,37 @@
-# WSL2 setup & devcontainer for side project
+# Dev setup
 
-## How to setup @ WSL2
+This repository holds a personal script that I've developed for automating the initialization of my development environment.
+
+**Note:** The script has been tested and validated on Ubuntu 22.04 and MacOS, but may not work as expected on other platforms.
+
+## How to run the install script
+
+Simply:
+
+```bash
+./src/install.sh
+```
+
+### Install additional Brew cask applications
+
+```bash
+make install/casks
+```
+
+## Devcontainer
+
+This script is also used to create a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) for my personal projects. 
+Those images are pushed to [Dockerhub](https://hub.docker.com/r/bamaas/devcontainer/tags).
+
+Check out the Docker image:
+
+```bash
+make image/run
+```
+
+This pulls and runs the image interactively.
+
+## My WSL2 setup
 
 1. Download & Install [Windows terminal](https://github.com/microsoft/terminal/releases). Use the .msixbundle
 
@@ -12,7 +43,7 @@
 
 5. Navigate to the directory where you extracted the zip. Windows filesystem is mounted on /mnt/c/
 
-6. Run: `./install.sh` (You are prompted for your password 2 times during installation)
+6. Run: `./src/install.sh` (You are prompted for your password 2 times during installation)
 
 7. logout sign-in again
 

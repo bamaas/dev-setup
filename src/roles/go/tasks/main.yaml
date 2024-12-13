@@ -2,7 +2,7 @@
 
 - name: Go install tools
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     go install {{ item }}
   become: false
   args:

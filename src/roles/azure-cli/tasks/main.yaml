@@ -71,20 +71,21 @@
         path: "~{{ ansible_username }}/.{{ shell_name }}rc"
         state: touch
 
-    - name: Enable Azure CLI completions
-      lineinfile:
-        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      loop:
-        - regexp: |
-            autoload bashcompinit \&\& bashcompinit
-          line: |
-            autoload bashcompinit && bashcompinit
-        - regexp: |
-            etc\/bash_completion\.d\/az
-          line: |
-            source $(brew --prefix)/etc/bash_completion.d/az
+    # TODO: this won't work correctly in zsh
+    # - name: Enable Azure CLI completions
+    #   lineinfile:
+    #     path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    #     regexp: "{{ item.regexp }}"
+    #     line: "{{ item.line }}"
+    #   loop:
+    #     - regexp: |
+    #         autoload bashcompinit \&\& bashcompinit
+    #       line: |
+    #         autoload bashcompinit && bashcompinit
+    #     - regexp: |
+    #         etc\/bash_completion\.d\/az
+    #       line: |
+    #         source $(brew --prefix)/etc/bash_completion.d/az
 
 - name: Install Azure CLI DevOps extension
   shell: az extension add --name azure-devops

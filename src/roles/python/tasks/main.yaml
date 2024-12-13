@@ -38,7 +38,7 @@
 
 - name: Install python versions
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     mise install python@{{ item }}
   become: false
   args:
@@ -47,7 +47,7 @@
 
 - name: Install python packages
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     pip install {{ item }}
   become: false
   args:
@@ -56,7 +56,7 @@
 
 - name: Install pipx
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     pip install pipx
   become: false
   args:
@@ -64,7 +64,7 @@
 
 - name: Ensure pipx path
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     pipx ensurepath
   become: false
   args:
@@ -72,7 +72,7 @@
 
 - name: Intall Python CLI tools
   shell: |
-    eval "$(mise activate {{ shell_name }})" && \
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
     pipx install {{ item }}
   become: false
   args:
