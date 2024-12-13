@@ -18,9 +18,12 @@
     - name: Set ansible_username
       set_fact:
         ansible_username: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
+    # - name: Set the shell name
+    #   set_fact:
+    #     shell_name: "{{ ansible_user_shell | regex_replace('^.*/', '') }}"
     - name: Set the shell name
       set_fact:
-        shell_name: "{{ ansible_user_shell | regex_replace('^.*/', '') }}"
+        shell_name: "zsh"
     - name: Set architecture fact based on ansible_architecture
       set_fact:
         architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"

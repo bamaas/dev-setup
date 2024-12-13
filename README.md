@@ -64,3 +64,5 @@ This pulls and runs the image interactively.
 * Install oc in another user directory and add to path
 
 * Install mise in another user directory and add to path
+
+* Fix issue where aliasses and mise can't be found in Linux because it's written to bashrc instead of zshrc
