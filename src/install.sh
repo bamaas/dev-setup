@@ -13,10 +13,14 @@ fi
 
 ansible-galaxy install -r ${dir}/requirements.yaml
 
-# TODO: build in a check if not running in a pipeline and darwin append --ask-become-pass
 run="ansible-playbook ${dir}/setup.yml -vvv"
+# Ask for sudo password if not running on macOS
 if [ "$(uname)" != "Darwin" ]; then
 	run="${run} --ask-become-pass"
+fi
+# Ask for sudo password if running on macOS and not in Azure Pipelines
+if [ "$(uname)" == "Darwin" ] && [ -z "${BUILD_BUILDID:-}" ]; then
+    run="${run} --ask-become-pass"
 fi
 ${run}
 
