@@ -1,125 +1,81 @@
 ---
-- name: Determine whether PyEnv is already installed
-  shell: "set -o pipefail && (~{{ ansible_username }}/.pyenv/bin/pyenv version || true) | wc -l"
-  args:
-    executable: /bin/bash
-  register: pyenv_installed
-  changed_when: pyenv_installed.rc != 0
 
-- name: Install PyEnv
-  when: pyenv_installed.stdout != '1'
-  block:
+- name: Install dependency apt packages
+  apt:
+    install_recommends: false
+    name:
+      - make
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - wget
+      - curl
+      - llvm
+      - libncurses5-dev
+      - xz-utils
+      - tk-dev
+      - libxml2-dev
+      - libxmlsec1-dev
+      - libffi-dev
+      - liblzma-dev
+      - python3-openssl
+      - git
+  when: ansible_pkg_mgr == 'apt'
 
-    - name: Create temporary directory
-      become: false
-      tempfile:
-        state: directory
-        suffix: gvm
-      register: tmpdir_pyenv_installer
+- name: Install dependency homebrew packages
+  homebrew:
+    name:
+      - openssl
+      - readline
+      - sqlite3
+      - xz
+      - zlib
+      - tcl-tk@8
+  when: ansible_pkg_mgr == 'homebrew'
 
-    - name: Install PyEnv dependency apt packages
-      apt:
-        install_recommends: false
-        name:
-          - make
-          - build-essential
-          - libssl-dev
-          - zlib1g-dev
-          - libbz2-dev
-          - libreadline-dev
-          - libsqlite3-dev
-          - wget
-          - curl
-          - llvm
-          - libncurses5-dev
-          - xz-utils
-          - tk-dev
-          - libxml2-dev
-          - libxmlsec1-dev
-          - libffi-dev
-          - liblzma-dev
-          - python3-openssl
-          - git
-
-    - name: Get pyenv install script
-      become: false
-      get_url:
-        url: https://pyenv.run
-        dest: "{{ tmpdir_pyenv_installer.path }}/pyenv-installer.sh"
-        mode: '0755'
-
-    - name: Execute pyenv install script
-      shell: "{{ tmpdir_pyenv_installer.path }}/pyenv-installer.sh"
-      become: false
-      args:
-        executable: /bin/bash
-
-    - name: Ensure PyEnv is set in ~/.profile
-      lineinfile:
-        path: "~{{ ansible_username }}/.profile"
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      loop:
-        - regexp: |
-            export PYENV_ROOT="$HOME/.pyenv"
-          line: |
-            export PYENV_ROOT="$HOME/.pyenv"
-        - regexp: |
-            command -v pyenv >/dev/null
-          line: |
-            command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-        - regexp: |
-            pyenv init -
-          line: |
-            eval "$(pyenv init -)"
-
-  always:
-    - name: Recursively remove temporary pyenv installer directory
-      file:
-        path: "{{ tmpdir_pyenv_installer.path }}"
-        state: absent
-
-  rescue:
-    - name: Recursively remove temporary pyenv installer directory
-      file:
-        path: "{{ tmpdir_pyenv_installer.path }}"
-        state: absent
-
-- name: Install Python versions
+- name: Install python versions
   shell: |
-    set -o pipefail && \
-    ~{{ ansible_username }}/.pyenv/bin/pyenv versions | grep {{ item }} || \
-    ~{{ ansible_username }}/.pyenv/bin/pyenv install {{ item }}
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+    mise install python@{{ item }}
   become: false
+  args:
+    executable: "{{ ansible_user_shell }}"
   loop: "{{ python_versions }}"
-  register: pyenv_version_installed
-  args:
-    executable: /bin/bash
 
-- name: Set default global Python version
-  shell: "~{{ ansible_username }}/.pyenv/bin/pyenv global {{ python_version_global }}"
-  become: false
-  args:
-    executable: /bin/bash
-
-## TODO: Fix this hacky solution.
 - name: Install python packages
-  shell: "~{{ ansible_username }}/.pyenv/shims/pip install {{ item }}"
+  shell: |
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+    pip install {{ item }}
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   loop: "{{ python_packages }}"
 
-## TODO: Fix this hacky solution.
-- name: Intall Python CLI tools
-  shell: "~{{ ansible_username }}/.pyenv/shims/pipx install {{ item }}"
+- name: Install pipx
+  shell: |
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+    pip install pipx
   become: false
   args:
-    executable: /bin/bash
-  loop: "{{ python_cli_tools }}"
+    executable: "{{ ansible_user_shell }}"
 
 - name: Ensure pipx path
-  shell: "~{{ ansible_username }}/.pyenv/shims/pipx ensurepath"
+  shell: |
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+    pipx ensurepath
   become: false
   args:
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
+
+- name: Intall Python CLI tools
+  shell: |
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+    pipx install {{ item }}
+  become: false
+  args:
+    executable: "{{ ansible_user_shell }}"
+  loop: "{{ python_cli_tools }}"
+

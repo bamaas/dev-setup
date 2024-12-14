@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: mise
+    mise_use:
+     - node@{{ nodejs_global }} --global

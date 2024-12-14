@@ -14,7 +14,7 @@
   args:
     creates:
       - "/usr/share/ca-certificates/{{ item }}_ca.pem"
-    executable: /bin/bash
+    executable: "{{ ansible_user_shell }}"
   loop: "{{ cert_urls }}"
 
 - name: Set in /etc/ca-certificates.conf

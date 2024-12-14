@@ -1,0 +1,108 @@
+---
+
+- name: Print facts
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Print all available facts
+      debug:
+        var: ansible_facts
+
+- name: Setup work environment
+  hosts: localhost
+  vars:
+    should_be_root:  "{{ true if ansible_pkg_mgr != 'homebrew' else false }}"
+  become: false
+  gather_facts: true
+  pre_tasks:
+    - name: Set ansible_username
+      set_fact:
+        ansible_username: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
+    - name: Set the shell name
+      set_fact:
+        shell_name: "{{ ansible_user_shell | regex_replace('^.*/', '') }}"
+    - name: Set architecture fact based on ansible_architecture
+      set_fact:
+        architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
+
+  roles:
+
+    - role: packages
+      packages:
+        apt:
+          - tar
+          - curl
+          - findutils
+          - unzip
+          - coreutils
+          - dnsutils
+          - net-tools
+          - rsync
+          - wget
+          - vim
+        homebrew:
+          - gnu-tar
+          - curl
+          - findutils
+          - unzip 
+          - coreutils
+          # - dnsutils # Not available in Brew
+          # - net-tools # Only available via Brew for Linux distros
+          - rsync
+          - wget
+          # - vim   # Already pre-installed
+
+    - role: zsh
+      install_autojump: true
+      install_pure_theme: true
+      install_zsh_autosuggestions: true
+      install_zsh_syntax_highlighting: true
+
+    - role: mise
+      mise_use:
+        - kind@0.25.0 --global
+        - kubectl@1.29.11 --global
+        - yq@4.44.5 --global
+        - helm@3.16.3 --global
+        - jq@1.7.1 --global
+        - k9s@0.32.7 --global
+        - gomigrate@4.18.1 --global
+        - sops@3.9.2 --global
+        - terraform@1.10.1 --global
+        - argocd@2.13.1 --global
+
+    - role: go
+      go_global: "1.23.3"
+      go_install:
+        - github.com/golangci/golangci-lint/cmd/golangci-lint@v1.60.2
+
+    - role: python
+      python_global: "3.13.0"
+      python_versions: []
+      python_packages:
+        - setuptools==58.0.3
+        - wheel==0.37.0
+        - ipython
+        - requests
+      python_cli_tools:
+        - commitizen
+        - pre-commit
+        - ruff
+        - yamllint
+
+    - role: nodejs
+      nodejs_global: "20.12.1"
+      nodejs_versions: []
+      nodejs_packages: []
+
+    - role: direnv
+      direnv_version: "2.35.0"
+
+    - role: openshift
+      openshift_version: 4.15.0-0.okd-2024-03-10-010116
+
+    - role: azure-cli
+      install_az_cli_devops_extension: true
+
+    - role: docker
+      install_docker_compose: true

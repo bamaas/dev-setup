@@ -1,0 +1,42 @@
+---
+- name: Install pre-req packages
+  become: '{{ should_be_root }}'
+  package:
+    name: curl
+
+- name: Determine whether mise is already installed
+  shell: "set -o pipefail && (mise version || true) | wc -l"
+  args:
+    executable: "{{ ansible_user_shell }}"
+  register: mise_installed
+  changed_when: mise_installed.rc != 0
+
+- name: Install Mise
+  when: mise_installed.stdout != '1'    # TODO: this doesnt work correctly
+  block:
+    - name: Install mise
+      shell: |
+        curl https://mise.run | MISE_INSTALL_PATH=~/.local/bin/mise sh
+      args:
+        executable: "{{ ansible_user_shell }}"
+
+    - name: Ensure ~/.profile file exists
+      file:
+        path: "~{{ ansible_username }}/.profile"
+        state: touch
+
+    - name: Ensure mise is set in ~/.profile
+      lineinfile:
+        path: "~{{ ansible_username }}/.profile"
+        regexp: |
+          /\.local\/bin\/mise activate {{ shell_name }}\)"
+        line: |
+          eval "$(~/.local/bin/mise activate {{ shell_name }})"
+
+- name: Mise use
+  shell: |
+    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+    mise use {{ item }}
+  args:
+    executable: "{{ ansible_user_shell }}"
+  loop: "{{ mise_use }}"

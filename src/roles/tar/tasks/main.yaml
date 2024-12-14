@@ -1,0 +1,20 @@
+- name: Install packages
+  become: '{{ should_be_root }}'
+  package:
+    name: '{{ item }}'
+    state: present
+  loop: "{{ packages[ansible_pkg_mgr] }}"
+
+- name: Ensure shell rc file exists
+  file:
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    state: touch
+
+- name: Set to path in ~/.{{ shell_name }}rc
+  lineinfile:
+    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    regexp: |
+       PATH\=\"\$HOMEBREW_PREFIX\/opt\/gnu-tar\/libexec\/gnubin\:\$PATH\"
+    line: |
+       PATH="$HOMEBREW_PREFIX/opt/gnu-tar/libexec/gnubin:$PATH"
+  when: ansible_pkg_mgr == 'homebrew'

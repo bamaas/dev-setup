@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: mise
+    mise_use:
+     - direnv@{{ direnv_version }} --global

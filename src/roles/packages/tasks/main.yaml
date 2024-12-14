@@ -1,0 +1,8 @@
+---
+
+    - name: Install packages
+      become: '{{ should_be_root }}'
+      package:
+        name: '{{ item }}'
+        state: latest
+      loop: "{{ packages[ansible_pkg_mgr] }}"

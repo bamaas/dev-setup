@@ -1,0 +1,4 @@
+install_autojump: false
+install_pure_theme: false
+install_zsh_autosuggestions: false
+install_zsh_syntax_highlighting: false

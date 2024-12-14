@@ -1,0 +1,96 @@
+---
+- name: Determine whether Azure CLI is already installed with the desired version
+  shell: "set -o pipefail && (az version | grep 'azure-cli' || true) | wc -l"
+  args:
+    executable: "{{ ansible_user_shell }}"
+  register: az_cli_installed
+  changed_when: az_cli_installed.rc != 0
+
+- name: Install Azure CLI
+  when: az_cli_installed.stdout != '1' and ansible_distribution == 'Ubuntu'
+  block:
+    - name: Install apt packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - lsb-release
+          - gnupg
+
+    - name: Get public signing key
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+      tags:
+        - az
+
+    - name: Configure Azure CLI apt repository
+      apt_repository:
+        repo: deb https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main
+        state: present
+        filename: azure-cli
+        update_cache: true
+      tags:
+        - az
+
+    - name: Install Azure CLI
+      apt:
+        name: azure-cli
+        update_cache: true
+        state: latest
+      tags:
+        - az
+
+  # TODO: fix this. This is not working correctly
+  # https://superuser.com/questions/1714374/command-not-found-complete-message-appears-every-time-i-open-the-terminal
+    # - name: Ensure ~/.profile file exists
+    #   file:
+    #     path: "~{{ ansible_username }}/.profile"
+    #     state: touch
+
+    # - name: Enable Azure CLI completions
+    #   lineinfile:
+    #     path: "~{{ ansible_username }}/.profile"
+    #     regexp: "{{ item.regexp }}"
+    #     line: "{{ item.line }}"
+    #   loop:
+    #     - regexp: |
+    #         etc\/bash_completion\.d\/azure-cli
+    #       line: |
+    #         source /etc/bash_completion.d/azure-cli
+
+# Can't install specific version of Azure CLI with Homebrew
+- name: Install Azure CLI
+  when: ansible_distribution == 'MacOSX'
+  block:
+    - name: Install Azure CLI
+      homebrew:
+        name: azure-cli
+
+    - name: Ensure ~/.{{ shell_name}}rc file exists
+      file:
+        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        state: touch
+
+    # TODO: this won't work correctly in zsh
+    # - name: Enable Azure CLI completions
+    #   lineinfile:
+    #     path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    #     regexp: "{{ item.regexp }}"
+    #     line: "{{ item.line }}"
+    #   loop:
+    #     - regexp: |
+    #         autoload bashcompinit \&\& bashcompinit
+    #       line: |
+    #         autoload bashcompinit && bashcompinit
+    #     - regexp: |
+    #         etc\/bash_completion\.d\/az
+    #       line: |
+    #         source $(brew --prefix)/etc/bash_completion.d/az
+
+- name: Install Azure CLI DevOps extension
+  shell: az extension add --name azure-devops
+  args:
+    executable: "{{ ansible_user_shell }}"
+  when: install_az_cli_devops_extension

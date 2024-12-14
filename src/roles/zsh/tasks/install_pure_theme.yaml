@@ -1,0 +1,64 @@
+- name: Get pure theme
+  when: ansible_distribution == 'Ubuntu'
+  block:
+    - name: Create a directory if it does not exist
+      file:
+        path: ~{{ ansible_username }}/.zsh
+        state: directory
+        mode: '0755'
+
+    - name: Get pure theme repo
+      git:
+        repo: "https://github.com/sindresorhus/pure.git"
+        dest: "~{{ ansible_username }}/.zsh/pure"
+
+    - name: Ensure ~/.zshrc file exists
+      file:
+        path: "~{{ ansible_username }}/.zshrc"
+        state: touch
+
+    - name: Set in ~/.zshrc
+      lineinfile:
+        path: "~{{ ansible_username }}/.zshrc"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        insertafter: EOF
+      loop:
+        - regexp: |
+            HOME\/\.zsh\/pure
+          line: |
+            fpath+=($HOME/.zsh/pure)
+        - regexp: |
+            autoload -U promptinit; promptinit
+          line: |
+            autoload -U promptinit; promptinit
+        - regexp: |
+            prompt pure
+          line: |
+            prompt pure
+
+- name: Get pure theme
+  when: ansible_distribution == 'MacOSX'
+  block:
+    - name: Get pure theme
+      homebrew:
+        name: pure
+
+    - name: Set in ~/.zshrc
+      lineinfile:
+        path: "~{{ ansible_username }}/.zshrc"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - regexp: |
+            autoload \-U promptinit\; promptinit
+          line: |
+            autoload -U promptinit; promptinit
+        - regexp: |
+            prompt pure
+          line: |
+            prompt pure
+        - regexp: |
+            \/share\/zsh\/site\-functions\"\)
+          line: |
+            fpath+=("$(brew --prefix)/share/zsh/site-functions")
