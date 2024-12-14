@@ -10,7 +10,7 @@ install/casks: 																				## Install Homebrew casks
 	./src/install_casks.sh
 
 run_playbook:																				## Run the playbook
-	ansible-playbook -i inventory/hosts playbook.yml
+	ansible-playbook -i inventory/hosts setup.yaml
 
 # -------------- Image --------------
 
