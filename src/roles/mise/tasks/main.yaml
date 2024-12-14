@@ -5,7 +5,9 @@
     name: curl
 
 - name: Determine whether mise is already installed
-  shell: "set -o pipefail && (eval "$(~/.local/bin/mise activate {{ shell_name }})" && mise version || true) | wc -l"
+  shell: |
+    set -o pipefail && \
+    (eval "$(~/.local/bin/mise activate {{ shell_name }})" && mise version || true) | wc -l
   args:
     executable: "{{ ansible_user_shell }}"
   register: mise_installed
