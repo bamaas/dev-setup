@@ -18,6 +18,8 @@ jobs:
     steps:
       - script: make install
         displayName: Install
+        env:
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - job: linuxBuild
     displayName: Build devcontainer image
@@ -36,6 +38,7 @@ jobs:
         displayName: Build image
         env:
           IMAGE_TAG: $(imageTag)
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
 
       - ${{ if eq( variables['Build.SourceBranch'], 'refs/heads/master' ) }}:
           - script: make image/push
