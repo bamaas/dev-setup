@@ -36,5 +36,5 @@ image/run:																					## Run the devcontainer image
 
 image/tag:																					## Tag the image as latest
 	docker tag \
-	${IMAGE_REGISTRY/${IMAGE_REPOSITORY}}:${OLD_TAG} \
+	${IMAGE_REGISTRY}/${IMAGE_REPOSITORY}:${OLD_TAG} \
 	${IMAGE_REGISTRY}/${IMAGE_REPOSITORY}:${NEW_TAG}
