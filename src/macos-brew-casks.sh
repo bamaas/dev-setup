@@ -7,3 +7,4 @@ brew install --cask warp
 brew install --cask spotify
 brew install --cask ollama
 brew install --cask rectangle
+brew install --cask sublime-text

@@ -40,7 +40,7 @@ jobs:
           IMAGE_TAG: $(imageTag)
           GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-      - ${{ if eq( variables['Build.SourceBranch'], 'refs/heads/master' ) }}:
+      - ${{ if eq( variables['Build.SourceBranch'], 'refs/heads/main' ) }}:
           - script: make image/push
             displayName: Push image
             env:
