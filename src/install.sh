@@ -2,13 +2,14 @@
 
 set -o errexit
 set -o nounset
+set -o pipefail
 
 dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if [ "$(uname)" == "Darwin" ]; then
-	${dir}/macos.sh
+	${dir}/macos.sh || exit 1
 else
-	${dir}/linux.sh
+	${dir}/linux.sh || exit 1
 fi
 
 ansible-galaxy install -r ${dir}/requirements.yaml

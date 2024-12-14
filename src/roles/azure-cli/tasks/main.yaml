@@ -42,21 +42,23 @@
       tags:
         - az
 
-    - name: Ensure ~/.{{ shell_name}}rc file exists
-      file:
-        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-        state: touch
+  # TODO: fix this. This is not working correctly
+  # https://superuser.com/questions/1714374/command-not-found-complete-message-appears-every-time-i-open-the-terminal
+    # - name: Ensure ~/.profile file exists
+    #   file:
+    #     path: "~{{ ansible_username }}/.profile"
+    #     state: touch
 
-    - name: Enable Azure CLI completions
-      lineinfile:
-        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      loop:
-        - regexp: |
-            etc\/bash_completion\.d\/azure-cli
-          line: |
-            source /etc/bash_completion.d/azure-cli
+    # - name: Enable Azure CLI completions
+    #   lineinfile:
+    #     path: "~{{ ansible_username }}/.profile"
+    #     regexp: "{{ item.regexp }}"
+    #     line: "{{ item.line }}"
+    #   loop:
+    #     - regexp: |
+    #         etc\/bash_completion\.d\/azure-cli
+    #       line: |
+    #         source /etc/bash_completion.d/azure-cli
 
 # Can't install specific version of Azure CLI with Homebrew
 - name: Install Azure CLI

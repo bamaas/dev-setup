@@ -31,6 +31,14 @@
     path: "~{{ ansible_username }}/.zshrc"
     state: touch
 
+- name: Source ~/.profile
+  lineinfile:
+    path: "~{{ ansible_username }}/.zshrc"
+    regexp: |
+      && emulate sh -c 'source ~/.profile
+    line: |
+      [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+
 - name: Init ~/.zshrc
   lineinfile:
     path: "~{{ ansible_username }}/.zshrc"
@@ -61,15 +69,6 @@
 - name: Install ZSH Syntax Highlighting
   when: install_zsh_syntax_highlighting
   include_tasks: install_zsh_syntax_highlighting.yaml
-
-- name: Source ~/.profile
-  when: ansible_distribution == 'Ubuntu'
-  lineinfile:
-    path: "~{{ ansible_username }}/.zshrc"
-    regexp: |
-      && emulate sh -c 'source ~/.profile
-    line: |
-      [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
 
 - name: Source oh-my-zsh
   lineinfile:

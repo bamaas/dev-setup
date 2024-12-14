@@ -7,9 +7,14 @@
         name: git
         state: latest
 
-- name: Set alias g for Git
+- name: Ensure ~/.profile file exists
+  file:
+    path: "~{{ ansible_username }}/.profile"
+    state: touch
+
+- name: Set alias g for Git in ~/.profile
   lineinfile:
-    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    path: "~{{ ansible_username }}/.profile"
     regexp: |
       alias g='git '
     line: |

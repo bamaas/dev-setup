@@ -1,5 +1,6 @@
 #!/bin/bash
 set -o errexit
+set -o pipefail
 set -o nounset
 
 # Install Xcode Command Line Tools
@@ -10,7 +11,8 @@ if ! command -v brew &>/dev/null
 then
 	# Install brew in ~/.brew
 	test -d ~/.brew || git clone https://github.com/Homebrew/brew ~/.brew
-	test -f ~/.zshrc && $(cat ~/.zshrc | grep 'brew shellenv)') || echo 'eval "$(~/.brew/bin/brew shellenv)"' >> ~/.zshrc	# TODO: this gets overwritten when installing the oh my zsh role
+
+	test -f ~/.zshrc && grep 'brew shellenv' ~/.zshrc &>/dev/null || echo 'eval "$(~/.brew/bin/brew shellenv)"' >> ~/.zshrc
 
 	# Verify Homebrew installation
 	source ~/.zshrc
@@ -18,6 +20,10 @@ then
 
 	brew update --force --quiet
 	chmod -R go-w "$(brew --prefix)/share/zsh"
+fi
+if [ $(which brew) = "${HOME}/.brew/bin/brew" ]
+then
+	test -f ~/.zshrc && grep 'brew shellenv' ~/.zshrc &>/dev/null || echo 'eval "$(~/.brew/bin/brew shellenv)"' >> ~/.zshrc
 fi
 
 # Install Ansible

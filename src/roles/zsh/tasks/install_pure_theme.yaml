@@ -22,9 +22,10 @@
         path: "~{{ ansible_username }}/.zshrc"
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
+        insertafter: EOF
       loop:
         - regexp: |
-            HOME/.zsh/pure
+            HOME\/\.zsh\/pure
           line: |
             fpath+=($HOME/.zsh/pure)
         - regexp: |

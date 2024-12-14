@@ -1,14 +1,14 @@
 ---
 
-- name: Esnure ~{{ ansible_username }}/.{{ shell_name }}rc exists
+- name: Esnure ~{{ ansible_username }}/.profile exists
   stat:
-    path: ~{{ ansible_username }}/.{{ shell_name }}rc
+    path: ~{{ ansible_username }}/.profile
   register: stat_result
 
-- name: Ensure direnv is set in ~{{ ansible_username }}/.{{ shell_name }}rc
+- name: Ensure direnv is set in ~{{ ansible_username }}/.profile
   when: stat_result.stat.exists
   lineinfile:
-    path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+    path: "~{{ ansible_username }}/.profile"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:

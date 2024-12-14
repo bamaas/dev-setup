@@ -20,14 +20,14 @@
       args:
         executable: "{{ ansible_user_shell }}"
 
-    - name: Ensure ~/.{{ shell_name}}rc file exists
+    - name: Ensure ~/.profile file exists
       file:
-        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        path: "~{{ ansible_username }}/.profile"
         state: touch
 
-    - name: Ensure mise is set in ~/.{{ shell_name }}rc
+    - name: Ensure mise is set in ~/.profile
       lineinfile:
-        path: "~{{ ansible_username }}/.{{ shell_name }}rc"
+        path: "~{{ ansible_username }}/.profile"
         regexp: |
           /\.local\/bin\/mise activate {{ shell_name }}\)"
         line: |
