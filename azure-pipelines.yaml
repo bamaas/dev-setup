@@ -13,6 +13,7 @@ variables:
 jobs:
   - job: macBuild
     displayName: Install on MacOS
+    dependsOn: linuxBuild
     pool:
       vmImage: macOS-latest
     steps:
@@ -23,8 +24,8 @@ jobs:
 
   - job: linuxBuild
     displayName: Build devcontainer image
-    dependsOn: macBuild
-    condition: succeeded()
+    # dependsOn: macBuild
+    # condition: succeeded()
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -34,11 +35,18 @@ jobs:
           command: login
           containerRegistry: dockerhub
 
+      - script: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker buildx create --use
+          docker buildx inspect --bootstrap
+        displayName: 'Set up Docker Buildx'
+
       - script: make image/build
         displayName: Build image
         env:
           IMAGE_TAG: $(imageTag)
           GITHUB_TOKEN: $(GITHUB_TOKEN)
+          DOCKER_CLI_EXPERIMENTAL: enabled
 
       - ${{ if eq( variables['Build.SourceBranch'], 'refs/heads/main' ) }}:
           - script: make image/push
