@@ -20,7 +20,10 @@ IMAGE_TAG?=latest
 IMAGE?=${IMAGE_REPOSITORY}:${IMAGE_TAG}
 
 image/build:																				## Build a container image
-	docker build -t ${IMAGE} .
+	docker buildx build \
+	--platform linux/amd64,linux/arm64 \
+	-t ${IMAGE} \
+	.
 
 image/push:																					## Push a container image
 	docker push ${IMAGE}
