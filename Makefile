@@ -16,7 +16,7 @@ run_playbook:																				## Run the playbook
 
 IMAGE_REGISTRY=docker.io
 IMAGE_REPOSITORY=bamaas/devcontainer
-IMAGE_TAG=$(shell if [ "${PLAYBOOK}" != "setup.yaml" ]; then echo "latest-$(basename ${PLAYBOOK} .yaml)"; else echo "latest"; fi)
+IMAGE_TAG?=$(shell if [ "${PLAYBOOK}" != "setup.yaml" ]; then echo "latest-$(basename ${PLAYBOOK} .yaml)"; else echo "latest"; fi)
 IMAGE?=${IMAGE_REPOSITORY}:${IMAGE_TAG}
 
 image/build:																				## Build a container image
