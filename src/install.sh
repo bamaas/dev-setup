@@ -17,7 +17,7 @@ fi
 
 ansible-galaxy install -r ${dir}/requirements.yaml
 
-run="ansible-playbook ${dir}/${PLAYBOOK}.yaml -vvv"
+run="ansible-playbook ${dir}/${PLAYBOOK} -vvv"
 # Ask for sudo password if not running on macOS
 if [ "$(uname)" != "Darwin" ]; then
 	run="${run} --ask-become-pass"
