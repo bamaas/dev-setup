@@ -4,7 +4,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+PLAYBOOK=${1:-setup.yaml}
 dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+test -f "${dir}/${PLAYBOOK}" || { echo "Playbook not found: ${PLAYBOOK}"; exit 1; }
 
 if [ "$(uname)" == "Darwin" ]; then
 	${dir}/macos.sh || exit 1
@@ -14,7 +17,7 @@ fi
 
 ansible-galaxy install -r ${dir}/requirements.yaml
 
-run="ansible-playbook ${dir}/setup.yaml -vvv"
+run="ansible-playbook ${dir}/${PLAYBOOK}.yaml -vvv"
 # Ask for sudo password if not running on macOS
 if [ "$(uname)" != "Darwin" ]; then
 	run="${run} --ask-become-pass"

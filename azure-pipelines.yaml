@@ -8,7 +8,8 @@ trigger:
 variables:
   - name: imageTag
     value: $(Build.SourceVersion)
-      
+  - name: imageTagMinimal
+    value: $(Build.SourceVersion)-minimal
 
 jobs:
   - job: macBuild
@@ -34,18 +35,11 @@ jobs:
           command: login
           containerRegistry: dockerhub
 
-      - script: |
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-          docker buildx create --use
-          docker buildx inspect --bootstrap
-        displayName: 'Set up Docker Buildx'
-
       - script: make image/build
         displayName: Build image
         env:
           IMAGE_TAG: $(imageTag)
           GITHUB_TOKEN: $(GITHUB_TOKEN)
-          DOCKER_CLI_EXPERIMENTAL: enabled
 
       - ${{ if eq( variables['Build.SourceBranch'], 'refs/heads/main' ) }}:
           - script: make image/push
@@ -63,3 +57,40 @@ jobs:
             displayName: Push image with latest tag
             env:
               IMAGE_TAG: latest
+
+  - job: linuxBuildMinimal
+    displayName: Build devcontainer minimal image
+    dependsOn: linuxBuild
+    condition: succeeded()
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - task: Docker@2
+        displayName: Login to DockerHub
+        inputs:
+          command: login
+          containerRegistry: dockerhub
+
+      - script: make image/build
+        displayName: Build image
+        env:
+          IMAGE_TAG: $(imageTagMinimal)
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
+          PLAYBOOK: minimal.yaml
+
+      - ${{ if eq( variables['Build.SourceBranch'], 'refs/heads/main' ) }}:
+        - script: make image/push
+          displayName: Push image
+          env:
+            IMAGE_TAG: $(imageTagMinimal)
+
+        - script: make image/tag
+          displayName: Retag image to latest
+          env:
+            OLD_TAG: $(imageTagMinimal)
+            NEW_TAG: latest-minimal
+
+        - script: make image/push
+          displayName: Push image with latest tag
+          env:
+            IMAGE_TAG: latest-minimal

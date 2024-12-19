@@ -1,0 +1,69 @@
+---
+
+- name: Print facts
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Print all available facts
+      debug:
+        var: ansible_facts
+
+- name: Setup work environment
+  hosts: localhost
+  vars:
+    should_be_root:  "{{ true if ansible_pkg_mgr != 'homebrew' else false }}"
+  become: false
+  gather_facts: true
+  pre_tasks:
+    - name: Set ansible_username
+      set_fact:
+        ansible_username: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
+    - name: Set the shell name
+      set_fact:
+        shell_name: "{{ ansible_user_shell | regex_replace('^.*/', '') }}"
+    - name: Set architecture fact based on ansible_architecture
+      set_fact:
+        architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
+
+  roles:
+
+    - role: packages
+      packages:
+        apt:
+          - tar
+          - curl
+          - findutils
+          - unzip
+          - coreutils
+          - dnsutils
+          - net-tools
+          - rsync
+          - wget
+          - vim
+          - upx
+        homebrew:
+          - gnu-tar
+          - curl
+          - findutils
+          - unzip 
+          - coreutils
+          # - dnsutils # Not available in Brew
+          # - net-tools # Only available via Brew for Linux distros
+          - rsync
+          - wget
+          # - vim   # Already pre-installed
+          - upx
+
+    - role: zsh
+      install_autojump: true
+      install_pure_theme: true
+      install_zsh_autosuggestions: true
+      install_zsh_syntax_highlighting: true
+
+    - role: mise
+
+    - role: azure-cli
+      install_az_cli_devops_extension: true
+
+    - role: docker
+      install_docker_compose: true
