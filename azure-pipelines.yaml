@@ -47,8 +47,8 @@ jobs:
           docker build \
             --build-arg BASE_TAG=$(imageTag) \
             -t bamaas/devcontainer:$(imageTagAzureAgent) \
-            -f Dockerfile.az-agent \
-            .
+            -f az-agent/Dockerfile \
+            ./az-agent
         displayName: Build Azure pipeline agent image
 
       - script: make image/push
