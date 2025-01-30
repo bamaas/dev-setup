@@ -66,4 +66,4 @@
       install_az_cli_devops_extension: true
 
     - role: docker
-      install_docker_compose: true
+      install_docker_compose: false
