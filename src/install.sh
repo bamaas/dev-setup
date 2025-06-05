@@ -33,6 +33,9 @@ red="\e[0;91m"
 green="\e[0;92m"
 reset="\e[0m"
 
+unminimize
+man-db
+
 if [ $? -eq 0 ]; then
 	echo "---------------------------------------------------------------------"
 	printf "${green}DONE: installed successfully.${reset}\n"
