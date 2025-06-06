@@ -61,6 +61,10 @@ This pulls and runs the image interactively.
 
 ## TODO
 
+* Install everything for a user instead of root.
+
+* Use mise.toml for global tool install. Run everything in parrallel.
+
 * Install oc in another user directory and add to path
 
 * Install mise in another user directory and add to path

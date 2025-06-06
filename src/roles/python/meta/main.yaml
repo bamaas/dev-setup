@@ -2,4 +2,4 @@
 dependencies:
   - role: mise
     mise_use:
-     - python@{{ python_global }} --global
+     - python@{{ python_global }}

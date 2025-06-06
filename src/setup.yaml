@@ -62,28 +62,28 @@
 
     - role: mise
       mise_use:
-        - kind@0.25.0 --global
-        - kubectl@1.29.11 --global
-        - yq@4.44.5 --global
-        - helm@3.16.3 --global
-        - jq@1.7.1 --global
-        - k9s@0.32.7 --global
-        - gomigrate@4.18.1 --global
-        - sops@3.9.2 --global
-        - terraform@1.10.1 --global
-        - argocd@2.13.1 --global
-        - kubeconform@0.7.0 --global
-        - shellcheck@0.10.0 --global
-        - kustomize@5.5.0 --global
-        - kubectx@0.9.5 --global
-        - kubens@0.9.5 --global
-        - ruff@0.9.9 --global
-        - k6@1.0.0 --global
-        - vault@1.19.5 --global
-        - mc@2025-05-21T01-59-54Z --global
-        - podman@5.5.0 --global
-        - ollama@0.9.0 --global
-        - glab@1.59.2 --global
+        - kind@0.25.0
+        - kubectl@1.29.11
+        - yq@4.44.5
+        - helm@3.16.3
+        - jq@1.7.1
+        - k9s@0.32.7
+        - gomigrate@4.18.1
+        - sops@3.9.2
+        - terraform@1.10.1
+        - argocd@2.13.1
+        - kubeconform@0.7.0
+        - shellcheck@0.10.0
+        - kustomize@5.5.0
+        - kubectx@0.9.5
+        - kubens@0.9.5
+        - ruff@0.9.9
+        - k6@1.0.0
+        - vault@1.19.5
+        - mc@2025-05-21T01-59-54Z
+        - podman@5.5.0
+        - ollama@0.9.0
+        - glab@1.59.2
 
     - role: go
       go_global: "1.23.3"
@@ -104,12 +104,15 @@
 
     - role: mise
       mise_use:
-        - uv --global
-        - poetry@2.1.3 --global      
-        - pipx:codespell@2.4.1 --global
-        - pipx:commitizen@4.4.1 --global
-        - pipx:pre-commit@4.1.0 --global
-        - pipx:yamllint@1.37.0 --global
+        - uv
+        - poetry@2.1.3      
+        - pipx:codespell@2.4.1
+        - pipx:commitizen@4.4.1
+        - pipx:pre-commit@4.1.0
+        - pipx:yamllint@1.37.0
+        - pipx:black@25.1.0
+        - pipx:ipython@9.3.0
+
 
     - role: nodejs
       nodejs_global: "20.12.1"
@@ -118,7 +121,7 @@
 
     - role: mise
       mise_use:
-        - npm:markdownlint-cli@0.44.0 --global
+        - npm:markdownlint-cli@0.44.0
 
     - role: direnv
       direnv_version: "2.35.0"

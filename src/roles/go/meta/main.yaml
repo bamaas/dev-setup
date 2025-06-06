@@ -2,4 +2,4 @@
 dependencies:
   - role: mise
     mise_use:
-     - go@{{ go_global }} --global
+     - go@{{ go_global }}

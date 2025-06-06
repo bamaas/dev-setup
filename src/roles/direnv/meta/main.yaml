@@ -2,4 +2,4 @@
 dependencies:
   - role: mise
     mise_use:
-     - direnv@{{ direnv_version }} --global
+     - direnv@{{ direnv_version }}

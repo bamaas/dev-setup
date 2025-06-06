@@ -1,6 +1,7 @@
 ---
 
 - name: Install dependency apt packages
+  become: true
   apt:
     install_recommends: false
     name:
@@ -54,28 +55,29 @@
     executable: "{{ ansible_user_shell }}"
   loop: "{{ python_packages }}"
 
-- name: Install pipx
-  shell: |
-    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
-    pip install pipx
-  become: false
-  args:
-    executable: "{{ ansible_user_shell }}"
+# Handled with Mise
+# - name: Install pipx
+#   shell: |
+#     eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+#     pip install pipx
+#   become: false
+#   args:
+#     executable: "{{ ansible_user_shell }}"
 
-- name: Ensure pipx path
-  shell: |
-    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
-    pipx ensurepath
-  become: false
-  args:
-    executable: "{{ ansible_user_shell }}"
+# - name: Ensure pipx path
+#   shell: |
+#     eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+#     pipx ensurepath
+#   become: false
+#   args:
+#     executable: "{{ ansible_user_shell }}"
 
-- name: Intall Python CLI tools
-  shell: |
-    eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
-    pipx install {{ item }}
-  become: false
-  args:
-    executable: "{{ ansible_user_shell }}"
-  loop: "{{ python_cli_tools }}"
+# - name: Intall Python CLI tools
+#   shell: |
+#     eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
+#     pipx install {{ item }}
+#   become: false
+#   args:
+#     executable: "{{ ansible_user_shell }}"
+#   loop: "{{ python_cli_tools }}"
 

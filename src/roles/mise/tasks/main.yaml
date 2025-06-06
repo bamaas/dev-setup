@@ -38,7 +38,6 @@
 - name: Mise use
   shell: |
     eval "$(~/.local/bin/mise activate {{ shell_name }})" && \
-    mise use {{ item }}
+    mise use {{ mise_use | join(' ') }} --global
   args:
     executable: "{{ ansible_user_shell }}"
-  loop: "{{ mise_use }}"

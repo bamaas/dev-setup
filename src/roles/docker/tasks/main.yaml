@@ -4,6 +4,7 @@
   when: ansible_pkg_mgr == 'apt'
   block:
     - name: Install prerequisites
+      become: true
       apt:
         name:
           - ca-certificates
@@ -39,6 +40,7 @@
     #     mode: '0644'
 
     - name: Install docker packages
+      become: true
       apt:
         name:
           - docker-ce
@@ -48,12 +50,14 @@
         update_cache: true
 
     - name: Install docker compose package
+      become: true
       apt:
         name:
           - docker-compose-plugin
         update_cache: true
 
     - name: Ensure directories exist
+      become: true
       file:
         path: "{{ item }}"
         state: directory
@@ -64,6 +68,7 @@
         - ~root/.docker
 
     - name: Configure docker daemon
+      become: true
       copy:
         dest: /etc/docker/daemon.json
         mode: '0644'
@@ -73,6 +78,7 @@
           }
 
     - name: Change ownership of docker login creds folder
+      become: true
       file:
         path: "~{{ ansible_username }}/.docker"
         state: directory
@@ -90,18 +96,21 @@
     #     executable: "{{ ansible_user_shell }}"
 
     - name: Add local user to docker group
+      become: true
       user:
         name: "{{ ansible_username }}"
         groups: docker
         append: true
 
     - name: Switch to the legacy variant of iptables
+      become: true
       alternatives:
         name: iptables
         path: /usr/sbin/iptables-legacy
       when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '22.04'
 
     - name: Ensure ~/.profile file exists
+      become: true
       file:
         path: "~{{ ansible_username }}/.profile"
         state: touch
