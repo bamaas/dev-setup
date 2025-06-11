@@ -41,6 +41,7 @@
           - wget
           - vim
           - upx
+          - iputils-ping
         homebrew:
           - gnu-tar
           - curl
